@@ -1,8 +1,5 @@
 /**
  * 短信发送模块
- *
- * @author zhangqichao
- * Created on 2017-08-18
  */
 
 package common

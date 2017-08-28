@@ -1,8 +1,5 @@
-/**
- * api中使用的公共函数
- *
- * @author zhangqichao
- * Created on 2017-08-18
+/*
+	通用类
  */
 package common
 
@@ -10,7 +7,6 @@ import (
 	"crypto/md5"
 	"encoding/json"
 	"fmt"
-	"../common/logger"
 	"net/http"
 	"net/smtp"
 	"regexp"
@@ -41,7 +37,6 @@ func ReturnEFormat(w http.ResponseWriter, code int, msg string) {
 	omg, _ := json.Marshal(res)
 	//w.WriteHeader(code)
 	w.Write(omg)
-	logger.Error(msg, "common.go")
 }
 
 /**

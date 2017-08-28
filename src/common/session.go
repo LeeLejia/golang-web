@@ -1,8 +1,5 @@
 /**
  * 系统用户登录验证模块
- *
- * @author zhangqichao
- * Created on 2017-08-18
  */
 package common
 

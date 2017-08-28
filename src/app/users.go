@@ -3,7 +3,7 @@ package app
 import (
 	"fmt"
 	"../common"
-	"../common/logger"
+	"../common/log"
 	"../model"
 	"net/http"
 	"strconv"
@@ -16,7 +16,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	account := r.PostFormValue("account")
 	pwd := r.PostFormValue("pwd")
 	roleType := r.PostFormValue("roleType")
-	oID := r.PostFormValue("oId")
+	//oID := r.PostFormValue("oId")
 	osType := r.FormValue("osType")
 	if account == "" {
 		common.ReturnEFormat(w, 500, "账号不能为空")
@@ -28,7 +28,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 	if roleType == "user" || roleType == "admin" || roleType == "super" {
 		where := fmt.Sprintf("WHERE account='%s' AND pwd='%s'", account, common.MD5Password(pwd))
-		fmt.Println(where)
+		fmt.Println(log.Green(where))
 		user, err := model.FindUsers(where, "", "")
 		if err != nil {
 			common.ReturnEFormat(w, 503, err.Error())
@@ -45,40 +45,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 		token := common.SaveSession(user[0].Uid, account, osType, user[0].UserType)
 		result := map[string]interface{}{"user": user, "token": token}
-		if user[0].UserType == "admin" {
-			organization, err := model.FindOrganization("WHERE code='" + user[0].Account + "'")
-			if err == nil {
-				result["oId"] = organization.ID
-			}
-		}
-		CreateOperateLogs("info", "登录", account, "本地登录，登录结果：登录成功", r)
 		common.ReturnFormat(w, 200, result, "SUCCESS")
-	} else if roleType == "employee" {
-		where := fmt.Sprintf("WHERE work_no='%s' AND pwd='%s'", account, common.MD5Password(pwd))
-		fmt.Println(where)
-		user, err := model.FindEmployees(where, "", "")
-		if err != nil {
-			common.ReturnEFormat(w, 503, err.Error())
-			return
-		}
-		if len(user) == 0 {
-			common.ReturnEFormat(w, 404, "用户名或密码错误")
-			return
-		}
-		if user[0].State == model.UserStateOff {
-			common.ReturnEFormat(w, 500, "账号已被停用")
-			return
-		}
-		if fmt.Sprintf("%d", user[0].OID) != oID {
-			common.ReturnEFormat(w, 500, "机构选择错误")
-			return
-		}
-		token := common.SaveSession(user[0].ID, account, osType, roleType)
-		CreateOperateLogs("info", "登录", account, "本地登录，登录结果：登录成功", r)
-		common.ReturnFormat(w, 200, map[string]interface{}{"user": user, "token": token, "oId": oID}, "SUCCESS")
-	} else {
-		common.ReturnEFormat(w, 500, "未识别的用户角色")
-		return
 	}
 }
 
@@ -125,11 +92,11 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	common.SetContent(w)
-	uaccount, err := common.CheckSession(r)
-	if err != nil {
-		common.ReturnEFormat(w, 403, err.Error())
-		return
-	}
+	//uaccount, err := common.CheckSession(r)
+	//if err != nil {
+	//	common.ReturnEFormat(w, 403, err.Error())
+	//	return
+	//}
 	accountStr := r.PostFormValue("accounts")
 	pwd := r.PostFormValue("pwd")
 	//username := r.PostFormValue("username")
@@ -166,21 +133,20 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(updater)
 			fmt.Println(where)
 			if state != "" && user.UserType == "admin" {
-				organization, err := model.FindOrganization("WHERE user_account='" + account + "'")
-				if err == nil {
-					err = model.UpdateEmployees(fmt.Sprintf("state=%s", state), fmt.Sprintf("WHERE o_id=%d", organization.ID))
-					if err != nil {
-						CreateOperateLogs("info", "修改", uaccount, fmt.Sprintf("修改会员资料，用户账号：%s，修改结果：修改失败，失败原因：%s", account, err.Error()), r)
-						logger.Error(fmt.Sprintf("更新机构员工状态失败，%s", err.Error()), "users.go")
-					}
-				}
+				//organization, err := model.FindOrganization("WHERE user_account='" + account + "'")
+				//if err == nil {
+				//	err = model.UpdateEmployees(fmt.Sprintf("state=%s", state), fmt.Sprintf("WHERE o_id=%d", organization.ID))
+				//	if err != nil {
+				//		CreateOperateLogs("info", "修改", uaccount, fmt.Sprintf("修改会员资料，用户账号：%s，修改结果：修改失败，失败原因：%s", account, err.Error()), r)
+				//		logger.Error(fmt.Sprintf("更新机构员工状态失败，%s", err.Error()), "users.go")
+				//	}
+				//}
 			}
 			err := model.UpdateUsers(updater, where)
 			if err != nil {
 				common.ReturnEFormat(w, 500, err.Error())
 				return
 			}
-			CreateOperateLogs("info", "修改", uaccount, fmt.Sprintf("修改会员资料，用户账号：%s，修改结果：修改成功", account), r)
 		}
 	}
 	common.ReturnFormat(w, 200, nil, "SUCCESS")
@@ -188,11 +154,11 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 func ListUsers(w http.ResponseWriter, r *http.Request) {
 	common.SetContent(w)
-	account, err := common.CheckSession(r)
-	if err != nil {
-		common.ReturnEFormat(w, 403, err.Error())
-		return
-	}
+	//account, err := common.CheckSession(r)
+	//if err != nil {
+	//	common.ReturnEFormat(w, 403, err.Error())
+	//	return
+	//}
 	q := r.FormValue("q")
 	state := r.FormValue("state")
 	order := r.FormValue("order")
@@ -256,7 +222,7 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 		tmp.CreatedAt = x.CreatedAt
 		result = append(result, tmp)
 	}
-	CreateOperateLogs("info", "查看", account, "查看会员列表", r)
+	//CreateOperateLogs("info", "查看", account, "查看会员列表", r)
 	common.ReturnFormat(w, 200, map[string]interface{}{"users": result, "total": total}, "SUCCESS")
 }
 

@@ -1,8 +1,5 @@
 /**
  * 公共数据库连接配置
- *
- * @author zhangqichao
- * Created on 2017-08-18
  */
 package pdb
 
