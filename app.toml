@@ -4,7 +4,7 @@ appEnv = "normal"
 DBHost = "localhost"
 DBPort = "5432"
 DBUser = "postgres"
-DBPassword = "imjia123"
+DBPassword = "xxx"
 DBName = "test"
 DBNameTest = "healthMgrTest"
 
