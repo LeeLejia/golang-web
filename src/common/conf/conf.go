@@ -19,6 +19,7 @@ type tomlFile struct {
 	FileUploadPath string `toml:"fileUploadPath"`
 	ServerHost     string `toml:"serverHost"`
 	ServerPort     string `toml:"serverPort"`
+	StaticPath	   string `toml:"staticPath"`
 }
 
 var App *tomlFile
@@ -29,10 +30,11 @@ func init() {
 
 func Init(filePath string) {
 	var path=RealFilePath(filePath)
+	fmt.Println(fmt.Sprintf("\x1b[%dm加载配置文件:%s\x1b[0m",uint8(93),path))
 	_, err := toml.DecodeFile(path, App)
 	if err != nil {
-		fmt.Println(fmt.Sprintf("\x1b[%dm读取配置文件失败！detail:%s\x1b[0m",91,err.Error()))
+		fmt.Println(fmt.Sprintf("\x1b[%dm文件不存在，请检查指定路径是否存在配置文件。！detail:%s\x1b[0m",uint8(91),err.Error()))
 		panic(err)
 	}
-	fmt.Println(App)
+	fmt.Println(fmt.Sprintf("\x1b[%dm配置:%s\x1b[0m",uint8(93),App))
 }

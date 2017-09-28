@@ -63,7 +63,7 @@ func insertSystemLogs(logType,tag, user, content string) {
 	if !CONF_WRITE_TO_DB{
 		return
 	}
-	Log := model.Log{}
+	Log := model.T_log{}
 	Log.Tag=tag
 	Log.Type=logType
 	Log.User=user

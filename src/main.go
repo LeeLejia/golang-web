@@ -1,28 +1,36 @@
 package main
 
 import (
-	"./app"
 	"./common/conf"
 	"fmt"
 	"./pdb"
 	"net/http"
+	"./app"
+	"./common"
 )
 
 func main() {
 	conf.Init("./app.toml")
-	pdb.InitDB(conf.App.DBHost, conf.App.DBPort, conf.App.DBUser, conf.App.DBPassword, conf.App.DBName)
-	http.HandleFunc("/login", app.Login)
-	http.HandleFunc("/register", app.Register)
-	http.HandleFunc("/logout", app.Logout)
-	http.HandleFunc("/reset_password", app.ResetPassword)
+	err:=pdb.InitDB(conf.App.DBHost, conf.App.DBPort, conf.App.DBUser, conf.App.DBPassword, conf.App.DBName)
+	if err!=nil{
+		fmt.Print("数据库配置错误。")
+	}
+	BeginServer()
+}
 
-	http.HandleFunc("/users/update", app.UpdateUser)
-	http.HandleFunc("/users/read", app.ListUsers)
+func BeginServer(){
 
-	http.HandleFunc("/test", app.Test)
+	/**注册路由*/
+	routers:=[]common.BH{
+		{Url:"/login",Check:false,Handle:app.Login},
+		{Url:"/logout",Check:false,Handle:app.Logout},
+		{Url:"/register",Check:false,Handle:app.Register},
+		{Url:"/developer/addApps",Check:true,Handle2:app.AddApp},
+		{Url:"/developer/list-apps",Check:true,Handle2:app.ListApps},
+	}
+	common.SetRouters(routers)
 
 	fsh := http.FileServer(http.Dir(conf.App.Static))
 	http.Handle("/static/", http.StripPrefix("/static/", fsh))
-
 	http.ListenAndServe(fmt.Sprintf(":%s", conf.App.ServerPort), nil)
 }

@@ -1,0 +1,98 @@
+package model
+
+import (
+	"time"
+	"github.com/bitly/go-simplejson"
+	"fmt"
+	"../pdb"
+)
+
+const (
+	USER_ROLE_COMMON = "common"
+	USER_ROLE_DEVELOPER = "developer"
+	USER_ROLE_ADMIN = "admin"
+	USER_ROLE_SUPER = "super"
+
+	USER_STATUS_INVALID=0
+	USER_STATUS_VALID=1
+
+)
+// 用戶表
+type T_user struct {
+	Id        int                `json:"id"`
+	Role      string             `json:"role"`
+	Nick      string             `json:"nick"`
+	Pwd       string             `json:"pwd"`
+	Avatar    string             `json:"avatar"`
+	Phone     string             `json:"phone"`
+	Email     string             `json:"email"`
+	QQ        string             `json:"qq"`
+	Status    int             `json:"status"`
+	Expend    * simplejson.Json  `json:"expend"`
+	UpdatedAt time.Time         `json:"updated_at"`
+	CreatedAt time.Time         `json:"created_at"`
+}
+
+func UserTableName() string{
+	return "t_user";
+}
+
+func (u* T_user) Insert() (err error){
+	stmt, err := pdb.Session.Prepare(fmt.Sprintf("INSERT INTO %s(role,nick,pwd,avatar,phone,email,qq,status,expend,created_at,updated_at) "+
+			  "VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)", UserTableName()))
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	u.UpdatedAt = time.Now()
+	u.CreatedAt = time.Now()
+	expend:="{}"
+	if u.Expend!=nil{
+		d,err:=u.Expend.MarshalJSON()
+		expend=string(d)
+		if err!=nil{
+			return err
+		}
+	}
+	_, err = stmt.Exec(u.Role,u.Nick,u.Pwd,u.Avatar,u.Phone,u.Email,u.QQ,u.Status,expend,u.CreatedAt,u.UpdatedAt)
+	return
+}
+
+func FindUsers(condition,limit,order string)(user []T_user,err error){
+	rows,err:=pdb.Session.Query(fmt.Sprintf("select id,role,nick,pwd,avatar,phone,email,qq,status,expend,updated_at,created_at from %s %s %s %s",UserTableName(),condition,order,limit))
+	if err!=nil{
+		return
+	}
+	for rows.Next(){
+		tmp:=T_user{}
+		bs:=new([]byte)
+		err=rows.Scan(&tmp.Id,&tmp.Role,&tmp.Nick,&tmp.Pwd,&tmp.Avatar,&tmp.Phone,&tmp.Email,&tmp.QQ,&tmp.Status,bs,&tmp.UpdatedAt,&tmp.CreatedAt)
+		if err!=nil{
+			fmt.Println(err.Error())
+			return
+		}
+		tmp.Expend,err=simplejson.NewJson(*bs)
+		if err!=nil{
+			fmt.Println(err.Error())
+			return
+		}
+		user=append(user,tmp)
+	}
+	return
+}
+
+func UpdateUsers(update, condition string) (err error) {
+	stmt, err := pdb.Session.Prepare(fmt.Sprintf("UPDATE %s %s %s", UserTableName(), update, condition))
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	_, err = stmt.Exec()
+	return
+}
+
+func CountUsers(condition string) (count int, err error) {
+	count = 0
+	err = pdb.Session.QueryRow(fmt.Sprintf("SELECT COUNT(*) FROM %s %s", UserTableName(), condition)).Scan(&count)
+	return
+}

@@ -30,10 +30,9 @@ func AppPath(appPath ...string) string {
 }
 
 // RealFilePath 返回绝对路径
-// RealFilePath("conf/app.conf")
 // =>
 func RealFilePath(relFilename string) string {
-	if strings.HasPrefix(relFilename, "/") {
+	if strings.HasPrefix(relFilename, "/") || relFilename[1]==':'{
 		return relFilename
 	}
 	return filepath.Join(AppPath(), relFilename)

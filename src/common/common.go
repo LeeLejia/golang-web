@@ -26,9 +26,16 @@ type RE struct {
 
 func ReturnFormat(w http.ResponseWriter, code int, data interface{}, msg string) {
 	SetContent(w)
-	res := R{Code: code, Data: data, Msg: msg}
-	omg, _ := json.Marshal(res)
-	w.Write(omg)
+	if data!=nil{
+		res := R{Code: code, Data: data, Msg: msg}
+		omg, _ := json.Marshal(res)
+		w.Write(omg)
+	}else{
+		res := RE{Code: code, Msg: msg}
+		omg, _ := json.Marshal(res)
+		w.Write(omg)
+	}
+
 }
 
 func ReturnEFormat(w http.ResponseWriter, code int, msg string) {
@@ -70,7 +77,9 @@ func PageParams(r *http.Request) (limitStr string) {
 	return
 }
 
-// IsPhone 是否是手机号
+/**
+匹配手机号
+ */
 func IsPhone(s string) bool {
 	if regexp.MustCompile(`^(13[0-9]|14[0-9]|15[0-9]|17[0-9]|18[0-9])\d{8}$`).MatchString(s) {
 		return true
@@ -78,21 +87,14 @@ func IsPhone(s string) bool {
 	return false
 }
 
-// IsEmail 是否是邮箱地址
+/**
+匹配邮箱
+ */
 func IsEmail(s string) bool {
 	if regexp.MustCompile("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+").MatchString(s) {
 		return true
 	}
 	return false
-}
-
-/**
-设置跨域访问
- */
-func SetContent(w http.ResponseWriter) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")             //允许访问所有域
-	w.Header().Add("Access-Control-Allow-Headers", "Content-Type") //header的类型
-	w.Header().Set("content-type", "application/json")             //返回数据格式是json
 }
 
 /**
