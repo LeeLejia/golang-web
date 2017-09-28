@@ -99,7 +99,6 @@ func SendSMSCode(phone string) {
 		return
 	}
 	allResult :=a.Query().Encode()
-
 	shit := "http://dysmsapi.aliyuncs.com/?"+allResult
 	fmt.Println(shit)
 }
