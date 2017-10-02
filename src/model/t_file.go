@@ -7,37 +7,43 @@ import (
 )
 
 type T_File struct {
-	ID          int64       `json:"id"`
-	FileKey     string      `json:"file_key"`
-	FileName	string		`json:"file_name"`
-	Owner       int         `json:"owner"`
-	Path        string      `json:"path"`
-	CreatedTime time.Time   `json:"created_time"`
+	ID        int64     `json:"id"`
+	FileKey   string    `json:"file_key"`
+	FileType  string    `json:"file_type"`
+	FileName  string    `json:"file_name"`
+	Owner     int       `json:"owner"`
+	Path      string    `json:"path"`
+	CreatedAt time.Time `json:"created_at"`
 }
+
+const(
+	FILE_TYPE_PIC = "picture"
+	FILE_TYPE_FILE = "file"
+)
 func FileTableName() string {
 	return "t_file"
 }
 
 func (f *T_File) Insert() (err error) {
-	stmt, err := pdb.Session.Prepare(fmt.Sprintf("INSERT INTO %s(file_key,file_name,owner,path,created_time) "+
-			  "VALUES($1,$2,$3,$4,$5)", FileTableName()))
+	stmt, err := pdb.Session.Prepare(fmt.Sprintf("INSERT INTO %s(file_key,file_name,file_type,owner,path,created_time) "+
+			  "VALUES($1,$2,$3,$4,$5,$6)", FileTableName()))
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
-	f.CreatedTime = time.Now()
-	_, err = stmt.Exec(f.FileKey,f.FileName,f.Owner,f.Path,f.CreatedTime)
+	f.CreatedAt = time.Now()
+	_, err = stmt.Exec(f.FileKey,f.FileName,f.FileType,f.Owner,f.Path,f.CreatedAt)
 	return
 }
 
 func FindFiles(condition, limit, order string) (result []T_File,err error) {
-	rows, err := pdb.Session.Query(fmt.Sprintf("SELECT id,file_key,file_name,owner,path,created_time FROM %s %s %s %s", FileTableName(), condition, order, limit))
+	rows, err := pdb.Session.Query(fmt.Sprintf("SELECT id,file_key,file_name,file_type,owner,path,created_time FROM %s %s %s %s", FileTableName(), condition, order, limit))
 	if err != nil {
 		return result, err
 	}
 	for rows.Next() {
 		tmp := T_File{}
-		err = rows.Scan(&tmp.ID,&tmp.FileKey,&tmp.FileName,&tmp.Owner,&tmp.Path,&tmp.CreatedTime)
+		err = rows.Scan(&tmp.ID,&tmp.FileKey,&tmp.FileName,&tmp.FileType,&tmp.Owner,&tmp.Path,&tmp.CreatedAt)
 		if err==nil {
 			result = append(result, tmp)
 		}

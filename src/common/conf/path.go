@@ -30,7 +30,6 @@ func AppPath(appPath ...string) string {
 }
 
 // RealFilePath 返回绝对路径
-// =>
 func RealFilePath(relFilename string) string {
 	if strings.HasPrefix(relFilename, "/") || relFilename[1]==':'{
 		return relFilename

@@ -19,7 +19,6 @@ func main() {
 }
 
 func BeginServer(){
-
 	/**注册路由*/
 	routers:=[]common.BH{
 		{Url:"/login",Check:false,Handle:app.Login},
@@ -27,10 +26,12 @@ func BeginServer(){
 		{Url:"/register",Check:false,Handle:app.Register},
 		{Url:"/developer/addApps",Check:true,Handle2:app.AddApp},
 		{Url:"/developer/list-apps",Check:true,Handle2:app.ListApps},
+		{Url:"/upload-picture",Check:false,Handle2:app.UploadPicture},
+		{Url:"/upload-file",Check:false,Handle2:app.UploadFile},
+		{Url:"/list-file",Check:true,Handle2:app.ListFiles},
 	}
 	common.SetRouters(routers)
-
-	fsh := http.FileServer(http.Dir(conf.App.Static))
+	fsh := http.FileServer(http.Dir(conf.App.StaticPath))
 	http.Handle("/static/", http.StripPrefix("/static/", fsh))
 	http.ListenAndServe(fmt.Sprintf(":%s", conf.App.ServerPort), nil)
 }

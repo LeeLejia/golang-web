@@ -6,20 +6,21 @@ package conf
 import (
 	"github.com/BurntSushi/toml"
 	"fmt"
+	"os"
 )
 
 type tomlFile struct {
-	DBHost         string `toml:"DBHost"`
-	DBPort         string `toml:"DBPort"`
-	DBUser         string `toml:"DBUser"`
-	DBPassword     string `toml:"DBPassword"`
-	DBName         string `toml:"DBName"`
-	DBNameTest     string `toml:"DBNameTest"`
-	Static         string `toml:"Static"`
-	FileUploadPath string `toml:"fileUploadPath"`
-	ServerHost     string `toml:"serverHost"`
-	ServerPort     string `toml:"serverPort"`
-	StaticPath	   string `toml:"staticPath"`
+	DBHost     string `toml:"DBHost"`
+	DBPort     string `toml:"DBPort"`
+	DBUser     string `toml:"DBUser"`
+	DBPassword string `toml:"DBPassword"`
+	DBName     string `toml:"DBName"`
+	DBNameTest string `toml:"DBNameTest"`
+	PathFile   string `toml:"Path_Upload_file"`
+	PathPic	   string `toml:"Path_Upload_pic"`
+	ServerHost string `toml:"serverHost"`
+	ServerPort string `toml:"serverPort"`
+	StaticPath string `toml:"staticPath"`
 }
 
 var App *tomlFile
@@ -37,4 +38,16 @@ func Init(filePath string) {
 		panic(err)
 	}
 	fmt.Println(fmt.Sprintf("\x1b[%dm配置:%s\x1b[0m",uint8(93),App))
+	if _,err:=os.Stat(App.StaticPath);err!=nil{
+		os.MkdirAll(App.StaticPath,0755)
+		fmt.Println(fmt.Sprintf("\x1b[%dm路径不存在%s,即将重新创建。detail:%s\x1b[0m",uint8(91),App.StaticPath,err.Error()))
+	}
+	if _,err:=os.Stat(App.PathPic);err!=nil{
+		os.MkdirAll(App.PathPic,0755)
+		fmt.Println(fmt.Sprintf("\x1b[%dm路径不存在%s,即将重新创建。detail:%s\x1b[0m",uint8(91),App.PathPic,err.Error()))
+	}
+	if _,err:=os.Stat(App.PathFile);err!=nil{
+		os.MkdirAll(App.PathFile,0755)
+		fmt.Println(fmt.Sprintf("\x1b[%dm路径不存在%s,即将重新创建。detail:%s\x1b[0m",uint8(91),App.PathFile,err.Error()))
+	}
 }

@@ -7,18 +7,28 @@ import (
 	"fmt"
 	"time"
 	"strconv"
+	"github.com/bitly/go-simplejson"
 )
 
 /**
 添加邀请码
  */
 func AddCode(w http.ResponseWriter, r *http.Request, user *model.T_user){
+	if user.Role!=model.USER_ROLE_ADMIN && user.Role!=model.USER_ROLE_DEVELOPER &&user.Role!=model.USER_ROLE_SUPER{
+		common.ReturnEFormat(w,common.CODE_ROLE_INVADE,"你没有添加邀请码的权限！")
+		return
+	}
 	appId:=r.PostFormValue("appId")
 	if appId==""{
 		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"未指定App！")
 		return
 	}
-	// consumer_:=r.PostFormValue("consumer")	//todo 用户相关信息
+	consumer_:=r.PostFormValue("consumer")
+	consumer,err:=simplejson.NewJson([]byte(consumer_))
+	if err!=nil{
+		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"客户信息格式不合法！")
+		return
+	}
 	describe:=r.PostFormValue("describe")
 	valid_:=r.PostFormValue("valid")
 	valid:=true
@@ -47,17 +57,17 @@ func AddCode(w http.ResponseWriter, r *http.Request, user *model.T_user){
 		Code:code,
 		AppId:appId,
 		Developer:developer,
-		// Consumer:consumer,
+		 Consumer:consumer,
 		Describe:describe,
 		Valid:valid,
 		MachineCount:0,
 		MostCount:mostCount,
 		EnableTime:EnableTime,
-		// StartTime:startTime,
-		// EndTime:endTime,
+		 StartTime:time.Unix(startTime,0),
+		 EndTime:time.Unix(endTime,0),
 		CreatedAt:time.Now(),
 	}
-	err:=t_code.Insert()
+	err=t_code.Insert()
 	if err==nil{
 		common.ReturnEFormat(w,common.CODE_DB_RW_ERR,"系统写入出错，请稍后重试！")
 		return

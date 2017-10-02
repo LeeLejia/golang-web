@@ -71,7 +71,7 @@ func RemoveSession(r *http.Request) {
 检测session合法性
 包括cookies,get,post提交方式,检查超时
  */
-func CheckSession(w http.ResponseWriter,r *http.Request) (user model.T_user, err error) {
+func CheckSession(w http.ResponseWriter,r *http.Request) (err error) {
 	sessionId:=""
 	token:=""
 	cookie0,err0 := r.Cookie("sessionId")
@@ -109,5 +109,5 @@ func CheckSession(w http.ResponseWriter,r *http.Request) (user model.T_user, err
 	session.RefreshTime()
 	http.SetCookie(w,&http.Cookie{Name:"sessionId",Value:sessionId,Path:"/"})
 	http.SetCookie(w,&http.Cookie{Name:"token",Value:token,Path:"/"})
-	return session.User,nil
+	return nil
 }

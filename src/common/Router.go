@@ -33,17 +33,31 @@ type BH struct{
 func (hd *BH) BsHandle(w http.ResponseWriter, r *http.Request){
 	SetContent(w)
 	if hd.Check{
-		if user,err:=CheckSession(w,r);err!=nil{
+		if err:=CheckSession(w,r);err!=nil{
 			ReturnEFormat(w, CODE_NEET_LOGIN_AGAIN, err.Error())
 			return
-		}else{
-			hd.User=user
+		}
+	}
+	if(hd.Handle!=nil){
+		hd.Handle(w,r)
+	}else{
+		sessionId:=""
+		cookie0,err0 := r.Cookie("sessionId")
+		if err0==nil{
+			sessionId= cookie0.Value
+		}
+		if sessionId==""{
+			sessionId = r.FormValue("sessionId")
+		}
+		if sessionId==""{
+			sessionId = r.PostFormValue("sessionId")
+		}
+		session:=UserSessions[sessionId]
+		if session!=nil{
+			hd.User=session.User
 		}
 		hd.Handle2(w,r,&hd.User)
-	}else{
-		hd.Handle(w,r)
 	}
-
 }
 
 /**

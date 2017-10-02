@@ -74,9 +74,11 @@ WITH (OIDS = FALSE);
 DROP TABLE IF EXISTS "t_file";
 CREATE TABLE "t_file" (
   "id"         SERIAL PRIMARY KEY,
-  "tag"       VARCHAR(10) COLLATE "default",
-  "type"       VARCHAR(10) COLLATE "default",
-  "filename"        VARCHAR(32) COLLATE "default",
+  "file_key"       VARCHAR(16) COLLATE "default",
+  "file_type"       VARCHAR(16) COLLATE "default",
+  "file_name"        VARCHAR(32) COLLATE "default",
+  "owner"           INT ,
+  "path"            VARCHAR(255) COLLATE "default",
   "created_at" TIMESTAMP
 )
 WITH (OIDS = FALSE);
