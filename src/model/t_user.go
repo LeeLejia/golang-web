@@ -5,6 +5,7 @@ import (
 	"github.com/bitly/go-simplejson"
 	"fmt"
 	"../pdb"
+	"math/rand"
 )
 
 const (
@@ -34,7 +35,7 @@ type T_user struct {
 }
 
 func UserTableName() string{
-	return "t_user";
+	return "t_user"
 }
 
 func (u* T_user) Insert() (err error){
@@ -46,15 +47,18 @@ func (u* T_user) Insert() (err error){
 	}
 	u.UpdatedAt = time.Now()
 	u.CreatedAt = time.Now()
-	expend:="{}"
-	if u.Expend!=nil{
-		d,err:=u.Expend.MarshalJSON()
-		expend=string(d)
-		if err!=nil{
-			return err
-		}
+	if u.Expend==nil{
+		u.Expend=&simplejson.Json{}
 	}
-	_, err = stmt.Exec(u.Role,u.Nick,u.Pwd,u.Avatar,u.Phone,u.Email,u.QQ,u.Status,expend,u.CreatedAt,u.UpdatedAt)
+	if u.Role==USER_ROLE_DEVELOPER{
+		u.Expend.Set("devId",getRandomString(8))
+		u.Expend.Set("devKey",getRandomString(8))
+	}
+	d,err:=u.Expend.MarshalJSON()
+	if err!=nil{
+		return err
+	}
+	_, err = stmt.Exec(u.Role,u.Nick,u.Pwd,u.Avatar,u.Phone,u.Email,u.QQ,u.Status,string(d),u.CreatedAt,u.UpdatedAt)
 	return
 }
 
@@ -95,4 +99,19 @@ func CountUsers(condition string) (count int, err error) {
 	count = 0
 	err = pdb.Session.QueryRow(fmt.Sprintf("SELECT COUNT(*) FROM %s %s", UserTableName(), condition)).Scan(&count)
 	return
+}
+
+
+/**
+获取随机字符串
+ */
+func  getRandomString(l int) string {
+	str := "QWERTYUIOPASDFGHJKLZXCVBNM"
+	bytes := []byte(str)
+	result := []byte{}
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	for i := 0; i < l; i++ {
+		result = append(result, bytes[r.Intn(len(bytes))])
+	}
+	return string(result)
 }

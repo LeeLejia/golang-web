@@ -7,8 +7,6 @@ import (
 	"../pdb"
 	"fmt"
 )
-
-
 func TestT_user_Insert(t *testing.T) {
 	conf.Init(conf_path)
 	err:=pdb.InitDB(conf.App.DBHost, conf.App.DBPort, conf.App.DBUser, conf.App.DBPassword, conf.App.DBName)
@@ -16,8 +14,8 @@ func TestT_user_Insert(t *testing.T) {
 		fmt.Print("数据库配置错误。")
 		t.Fail()
 	}
-	// 正常插入
-	user:=&T_user{
+	user:=[]T_user{
+		{
 		Role:USER_ROLE_ADMIN,
 		Nick:"白菜",
 		Pwd:"imjia123",
@@ -27,18 +25,33 @@ func TestT_user_Insert(t *testing.T) {
 		Email:"cjwddz@qq.com",
 		QQ:"1436983000",
 		Expend: simplejson.New(),
+	},{
+			Role:USER_ROLE_DEVELOPER,
+			Nick:"白菜",
+			Pwd:"imjia123",
+			Status:2,
+			Avatar:"https://avatars2.githubusercontent.com/u/24471738?v=4&s=40",
+			Phone:"13480332035",
+			Email:"cjwddaz@qq.com",
+			QQ:"1436983090",
+			Expend: simplejson.New(),
+		},{
+		},
 	}
 	fmt.Println(user)
-	err=user.Insert()
+	err=user[0].Insert()
+	if err!=nil{
+		fmt.Println(err.Error())
+		t.Fail()
+	}
+	// 插入开发者
+	err=user[1].Insert()
 	if err!=nil{
 		fmt.Println(err.Error())
 		t.Fail()
 	}
 	// 插入空对象
-	user=&T_user{
-	}
-	fmt.Println(user)
-	err=user.Insert()
+	err=user[2].Insert()
 	if err!=nil{
 		fmt.Println(err.Error())
 		t.Fail()
