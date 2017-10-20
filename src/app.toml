@@ -4,12 +4,12 @@ DBHost = "localhost"
 DBPort = "5432"
 DBUser = "postgres"
 
-DBPassword = "xxxx"
+DBPassword = "imjia123"
 DBName = "my-site"
 
-staticPath = "/static"
-Path_Upload_pic = "/upload_pic"
-Path_Upload_file = "/upload_files"
+staticPath = "/home/cjwddz/桌面/git-project/golang-web/static"
+Path_Upload_pic = "/home/cjwddz/桌面/git-project/golang-web/upload_pic"
+Path_Upload_file = "/home/cjwddz/桌面/git-project/golang-web/upload_files"
 
 serverHost="http://localhost"
 serverPort="80"

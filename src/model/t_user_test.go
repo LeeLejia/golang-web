@@ -14,11 +14,12 @@ func TestT_user_Insert(t *testing.T) {
 		fmt.Print("数据库配置错误。")
 		t.Fail()
 	}
+
 	user:=[]T_user{
 		{
 		Role:USER_ROLE_ADMIN,
 		Nick:"白菜",
-		Pwd:"imjia123",
+		Pwd:"xxxxx",
 		Status:2,
 		Avatar:"https://avatars2.githubusercontent.com/u/24471738?v=4&s=40",
 		Phone:"13480332034",
@@ -28,7 +29,7 @@ func TestT_user_Insert(t *testing.T) {
 	},{
 			Role:USER_ROLE_DEVELOPER,
 			Nick:"白菜",
-			Pwd:"imjia123",
+			Pwd:"xxxxx",
 			Status:2,
 			Avatar:"https://avatars2.githubusercontent.com/u/24471738?v=4&s=40",
 			Phone:"13480332035",

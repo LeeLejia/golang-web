@@ -18,16 +18,18 @@ WITH (OIDS = FALSE);
 DROP TABLE IF EXISTS "t_user";
 CREATE TABLE "t_user" (
   "id"         SERIAL PRIMARY KEY,
-  "role"        INT,
+  "role"        VARCHAR (10),
   "developer"   INT,
   "nick"       VARCHAR(50) COLLATE "default",
   "pwd"        VARCHAR(50) COLLATE "default",
-  "avator"      VARCHAR(50) COLLATE "default",
+  "avatar"      VARCHAR(225) COLLATE "default",
   "phone"       VARCHAR(11) COLLATE "default",
   "email"      VARCHAR(50) COLLATE "default",
   "qq"      VARCHAR(50) COLLATE "default",
+  "status"  INT,
   "expend"  JSONB NOT NULL,
   "created_at" TIMESTAMP,
+  "updated_at" TIMESTAMP,
 )
 WITH (OIDS = FALSE);
 

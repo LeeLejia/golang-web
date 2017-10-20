@@ -129,7 +129,7 @@ CREATE TABLE "public"."t_user" (
 "role" int4 NOT NULL,
 "nick" varchar(50) COLLATE "default" NOT NULL,
 "pwd" varchar(50) COLLATE "default" NOT NULL,
-"avator" varchar(255) COLLATE "default" NOT NULL,
+"avatar" varchar(255) COLLATE "default" NOT NULL,
 "phone" varchar(11) COLLATE "default" NOT NULL,
 "email" varchar(50) COLLATE "default" NOT NULL,
 "qq" varchar(50) COLLATE "default" NOT NULL,

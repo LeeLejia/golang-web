@@ -28,10 +28,10 @@ type T_user struct {
 	Phone     string             `json:"phone"`
 	Email     string             `json:"email"`
 	QQ        string             `json:"qq"`
-	Status    int             `json:"status"`
+	Status    int             	 `json:"status"`
 	Expend    * simplejson.Json  `json:"expend"`
-	UpdatedAt time.Time         `json:"updated_at"`
-	CreatedAt time.Time         `json:"created_at"`
+	UpdatedAt time.Time          `json:"updated_at"`
+	CreatedAt time.Time          `json:"created_at"`
 }
 
 func UserTableName() string{

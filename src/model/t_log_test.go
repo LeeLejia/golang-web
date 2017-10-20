@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-const conf_path="C:\\Users\\lejia\\Desktop\\git-project\\go-web\\app.toml"
+const conf_path="/home/cjwddz/桌面/git-project/golang-web/src/app.toml"
 
 func TestFindLogs(t *testing.T) {
 	conf.Init(conf_path)
