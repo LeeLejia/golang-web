@@ -14,10 +14,10 @@ var Session *sql.DB
 
 func InitDB(host, port, user, pwd, dbName string) error {
 	dateSource := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, pwd, dbName)
-	fmt.Println(dateSource)
-	db, _ := sql.Open("postgres", dateSource)
+	fmt.Println("database source:"+dateSource)
+	db, err := sql.Open("postgres", dateSource)
 	Session = db
-	err := Session.Ping()
+	err = Session.Ping()
 	if err != nil {
 		go reInit(dateSource, 1)
 	}
@@ -31,7 +31,7 @@ func reInit(dateSource string, seconds int) {
 			Session = db
 			break
 		} else {
-			fmt.Println("数据库连接失败，2分钟后重试")
+			fmt.Println("数据库连接失败，2分钟后重试! error:"+err.Error())
 			time.Sleep(time.Minute * 2)
 			reInit(dateSource, seconds*2)
 		}

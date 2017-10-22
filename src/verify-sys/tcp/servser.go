@@ -30,7 +30,7 @@ func Recv(clnSck net.Conn) {
 		}
 		//过滤心跳等
 		if dataLen > 10 {
-			EvnHandle.Recv(buf,clnSck)
+			EvnHandle.Recv(buf[:dataLen],clnSck)
 		}
 	}
 }

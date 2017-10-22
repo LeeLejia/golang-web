@@ -9,6 +9,7 @@ import (
 const(
 	LOG_TYPE_DEBUG="debug"
 	LOG_TYPE_INFO="info"
+	LOG_TYPE_WARM="warn"
 	LOG_TYPE_ERROR="error"
 	LOG_TYPE_NORMAL="normal"
 

@@ -2,7 +2,7 @@
 appEnv = "normal"
 DBHost = "localhost"
 DBPort = "5432"
-DBUser = "postgres"
+DBUser = "cjwddz"
 
 DBPassword = "imjia123"
 DBName = "my-site"

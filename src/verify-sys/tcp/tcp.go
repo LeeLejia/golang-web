@@ -2,7 +2,6 @@ package tcp
 
 import (
 	"net"
-	"../conf"
 	"fmt"
 )
 
@@ -13,13 +12,13 @@ type Handle struct {
 }
 
 var EvnHandle Handle
-func BeginServer(online func(net.Conn),offline func(net.Conn),recv func([]byte,net.Conn)) {
-	srvSck, err := net.Listen("tcp", conf.App.TcpAddress)
+func BeginServer(address string,online func(net.Conn),offline func(net.Conn),recv func([]byte,net.Conn)) {
+	srvSck, err := net.Listen("tcp", address)
 	if err != nil {
 		fmt.Println("打开tcp端口失败："+err.Error())
 		return
 	}
-	fmt.Println("tcp start,address:"+conf.App.TcpAddress)
+	fmt.Println("tcp start,address:"+address)
 	defer srvSck.Close()
 	go linkEvent()
 	//监听到连接通知channel，开启接收线程

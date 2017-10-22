@@ -29,7 +29,7 @@ CREATE TABLE "t_user" (
   "status"  INT,
   "expend"  JSONB NOT NULL,
   "created_at" TIMESTAMP,
-  "updated_at" TIMESTAMP,
+  "updated_at" TIMESTAMP
 )
 WITH (OIDS = FALSE);
 

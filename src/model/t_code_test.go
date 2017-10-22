@@ -26,7 +26,6 @@ func TestT_code_Insert(t *testing.T) {
 		Describe:"测试",
 		Valid:true,
 		MachineCount:5,
-		MostCount:-1,
 		EnableTime:false,
 		StartTime:time.Now(),
 		EndTime:time.Now(),
