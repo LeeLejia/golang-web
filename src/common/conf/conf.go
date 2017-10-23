@@ -38,16 +38,18 @@ func Init(filePath string) {
 		panic(err)
 	}
 	fmt.Println(fmt.Sprintf("\x1b[%dm配置:%s\x1b[0m",uint8(93),App))
-	if _,err:=os.Stat(App.StaticPath);err!=nil{
-		os.MkdirAll(App.StaticPath,0755)
-		fmt.Println(fmt.Sprintf("\x1b[%dm路径不存在%s,即将重新创建。detail:%s\x1b[0m",uint8(91),App.StaticPath,err.Error()))
-	}
-	if _,err:=os.Stat(App.PathPic);err!=nil{
-		os.MkdirAll(App.PathPic,0755)
-		fmt.Println(fmt.Sprintf("\x1b[%dm路径不存在%s,即将重新创建。detail:%s\x1b[0m",uint8(91),App.PathPic,err.Error()))
-	}
-	if _,err:=os.Stat(App.PathFile);err!=nil{
-		os.MkdirAll(App.PathFile,0755)
-		fmt.Println(fmt.Sprintf("\x1b[%dm路径不存在%s,即将重新创建。detail:%s\x1b[0m",uint8(91),App.PathFile,err.Error()))
+	checkDirs()
+}
+
+func checkDirs(){
+	for _,path:=range []string{App.StaticPath,App.PathPic,App.PathFile} {
+		rp:=RealFilePath(path)
+		if _,err:=os.Stat(rp);err!=nil{
+			fmt.Println(fmt.Sprintf("\x1b[%dm路径不存在%s,即将重新创建。detail:%s\x1b[0m",uint8(91),rp,err.Error()))
+			err:=os.MkdirAll(rp,0755)
+			if err!=nil{
+				fmt.Println(fmt.Sprintf("\x1b[%dm创建路径失败:%s。detail:%s\x1b[0m",uint8(91),rp,err.Error()))
+			}
+		}
 	}
 }
