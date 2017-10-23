@@ -35,8 +35,6 @@ func AddCode(w http.ResponseWriter, r *http.Request, user *model.T_user){
 	if valid_ =="" || valid_ =="false"{
 		valid=false
 	}
-	mostCount_:=r.PostFormValue("mostCount")
-	mostCount,_:=strconv.Atoi(mostCount_)
 	EnableTime_:=r.PostFormValue("enableTime")
 	EnableTime:=true
 	if EnableTime_ == "" || EnableTime_ == "false" {
@@ -61,7 +59,6 @@ func AddCode(w http.ResponseWriter, r *http.Request, user *model.T_user){
 		Describe:describe,
 		Valid:valid,
 		MachineCount:0,
-		MostCount:mostCount,
 		EnableTime:EnableTime,
 		 StartTime:time.Unix(startTime,0),
 		 EndTime:time.Unix(endTime,0),
