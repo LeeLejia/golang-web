@@ -7,6 +7,27 @@ import (
 	"github.com/bitly/go-simplejson"
 )
 
+/*
+DROP TABLE IF EXISTS t_app;
+CREATE TABLE t_app (
+"id" serial NOT NULL,
+"icon" text,
+"app_id" varchar(16) COLLATE "default",
+"name" varchar(128) COLLATE "default",
+"version" varchar(16) COLLATE "default",
+"describe" varchar(255) COLLATE "default",
+"developer" int4,
+"valid" bool DEFAULT TRUE,
+"file" varchar(256) COLLATE "default",
+"src" varchar(256) COLLATE "default",
+"expend" jsonb NOT NULL,
+"download_count" int4 DEFAULT -1,
+"created_at" timestamp(6) DEFAULT CURRENT_TIMESTAMP
+)
+WITH (OIDS=FALSE);
+ */
+
+
 type T_app struct {
 	ID            int64     `json:"id"`
 	Icon          string    `json:"icon"`

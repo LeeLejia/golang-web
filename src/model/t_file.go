@@ -6,6 +6,20 @@ import (
 	"time"
 )
 
+/*
+DROP TABLE IF EXISTS t_file;
+CREATE TABLE t_file (
+"id" serial NOT NULL,
+"file_key" varchar(16) UNIQUE COLLATE "default",
+"file_type" varchar(16) COLLATE "default",
+"file_name" varchar(128) COLLATE "default",
+"owner" int4,
+"path" varchar(255) COLLATE "default",
+"created_at" timestamp(6) DEFAULT CURRENT_TIMESTAMP
+)
+WITH (OIDS=FALSE);
+ */
+
 type T_File struct {
 	ID        int64     `json:"id"`
 	FileKey   string    `json:"file_key"`

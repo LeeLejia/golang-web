@@ -5,6 +5,18 @@ import (
 	"fmt"
 	"../pdb"
 )
+/*
+DROP TABLE IF EXISTS t_log;
+CREATE TABLE t_log (
+"id" serial NOT NULL,
+"type" varchar(16) COLLATE "default",
+"tag" varchar(256) COLLATE "default",
+"user" int4,
+"content" varchar(512) COLLATE "default",
+"created_at" timestamp(6) DEFAULT CURRENT_TIMESTAMP
+)
+WITH (OIDS=FALSE);
+ */
 
 const(
 	LOG_TYPE_DEBUG="debug"
