@@ -8,6 +8,25 @@ import (
 	"math/rand"
 )
 
+/*
+DROP TABLE IF EXISTS t_user;
+CREATE TABLE t_user (
+"id" serial NOT NULL,
+"role" varchar(16) COLLATE "default",
+"nick" varchar(128) COLLATE "default",
+"pwd" varchar(128) COLLATE "default",
+"avatar" varchar(128) COLLATE "default",
+"phone" varchar(11) COLLATE "default",
+"email" varchar(128) COLLATE "default",
+"qq" varchar(13) COLLATE "default",
+"status" int4 DEFAULT 1,
+"expend" jsonb NOT NULL,
+"updated_at" timestamp(6) DEFAULT CURRENT_TIMESTAMP,
+"created_at" timestamp(6) DEFAULT CURRENT_TIMESTAMP
+)
+WITH (OIDS=FALSE);
+ */
+
 const (
 	USER_ROLE_COMMON = "common"
 	USER_ROLE_DEVELOPER = "developer"
