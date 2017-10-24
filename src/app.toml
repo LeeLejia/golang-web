@@ -7,9 +7,9 @@ DBUser = "postgres"
 DBPassword = "imjia123"
 DBName = "my-site"
 
-staticPath = "/home/ubuntu/project/golang-web/workdir/static"
-Path_Upload_pic = "/home/ubuntu/project/golang-web/workdir/static/upload_pic"
-Path_Upload_file = "/home/ubuntu/project/golang-web/workdir/static/upload_files"
+staticPath = "./workdir/static"
+Path_Upload_pic = "./workdir/static/upload_pic"
+Path_Upload_file = "./workdir/static/upload_files"
 
 serverHost="http://localhost"
 serverPort="80"
