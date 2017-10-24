@@ -4,7 +4,7 @@ DBHost = "localhost"
 DBPort = "5432"
 DBUser = "postgres"
 
-DBPassword = "imjia123"
+DBPassword = "xxxxx"
 DBName = "my-site"
 
 staticPath = "./workdir/static"
