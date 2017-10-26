@@ -11,6 +11,7 @@ CREATE TABLE t_vlog (
 "id" serial NOT NULL,
 "tag" varchar(255) COLLATE "default",
 "code" varchar(16) COLLATE "default",
+"app_id" varchar(16) COLLATE "default",
 "machine" varchar(128) COLLATE "default",
 "content" varchar(255) COLLATE "default",
 "created_at" timestamp(6) DEFAULT CURRENT_TIMESTAMP
@@ -37,6 +38,7 @@ type T_vlog struct {
 	ID        int64     `json:"id"`
 	Tag       string    `json:"tag"`
 	Code      string    `json:"code"`
+	App 	  string 	`json:"app_id"`
 	Machine   string    `json:"machine"`
 	Content   string    `json:"content"`
 	CreatedAt time.Time `json:"created_at"`
@@ -47,25 +49,25 @@ func VLogTableName() string {
 }
 
 func (m *T_vlog) Insert() (err error) {
-	stmt, err := pdb.Session.Prepare(fmt.Sprintf("INSERT INTO %s(tag,code,machine,content,created_at) "+
-		"VALUES($1,$2,$3,$4,$5)", VLogTableName()))
+	stmt, err := pdb.Session.Prepare(fmt.Sprintf("INSERT INTO %s(tag,code,app_id,machine,content,created_at) "+
+		"VALUES($1,$2,$3,$4,$5,$6)", VLogTableName()))
 	if err != nil {
 		return
 	}
 	m.CreatedAt = time.Now()
-	_, err = stmt.Exec(m.Tag, m.Code, m.Machine, m.Content, m.CreatedAt)
+	_, err = stmt.Exec(m.Tag, m.Code,m.App, m.Machine, m.Content, m.CreatedAt)
 	return
 }
 
 func FindVLogs(condition, limit, order string) ([]T_vlog, error) {
 	result := []T_vlog{}
-	rows, err := pdb.Session.Query(fmt.Sprintf("SELECT id,tag,code,machine,content,created_at FROM %s %s %s %s", VLogTableName(), condition, order, limit))
+	rows, err := pdb.Session.Query(fmt.Sprintf("SELECT id,tag,code,app_id,machine,content,created_at FROM %s %s %s %s", VLogTableName(), condition, order, limit))
 	if err != nil {
 		return result, err
 	}
 	for rows.Next() {
 		tmp := T_vlog{}
-		err = rows.Scan(&tmp.ID, &tmp.Tag, &tmp.Code, &tmp.Machine, &tmp.Content, &tmp.CreatedAt)
+		err = rows.Scan(&tmp.ID, &tmp.Tag,&tmp.App,&tmp.Code, &tmp.Machine, &tmp.Content, &tmp.CreatedAt)
 		result = append(result, tmp)
 	}
 	return result, err

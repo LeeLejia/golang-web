@@ -16,9 +16,9 @@ func TestT_vlog_Insert(t *testing.T) {
 		t.Fail()
 	}
 	its:=[]T_vlog{
-		{Tag:"验证成功",Code:"14gaseg211521515154545415",Machine:"sgeafgweafjpagewjqogjapwikpfw",Content:"测试日志-长",CreatedAt:time.Now()},
-		{Tag:"验证成功",Code:"1",Machine:"sgeafgweafjpagewjqogjapwikpfw",Content:"测试日志-短",CreatedAt:time.Now()},
-		{Tag:"验证成功",Code:"3sgawefs",Machine:"sgeafgweafjpagewjqogjapwikpfw",Content:`{"protosign":1258,"msgType":0,"machine":"862095022571886","code":"1ab2c","version":"1.0","application":"jwechat"}`,CreatedAt:time.Now()},
+		{Tag:"验证成功",Code:"14gaseg211521515154545415",App:"old1234", Machine:"sgeafgweafjpagewjqogjapwikpfw",Content:"测试日志-长",CreatedAt:time.Now()},
+		{Tag:"验证成功",Code:"1",App:"old1234", Machine:"sgeafgweafjpagewjqogjapwikpfw",Content:"测试日志-短",CreatedAt:time.Now()},
+		{Tag:"验证成功",Code:"3sgawefs",App:"old1234", Machine:"sgeafgweafjpagewjqogjapwikpfw",Content:`{"protosign":1258,"msgType":0,"machine":"862095022571886","code":"1ab2c","version":"1.0","application":"jwechat"}`,CreatedAt:time.Now()},
 	}
 	for _,it:=range its{
 		err=it.Insert()
