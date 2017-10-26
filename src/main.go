@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"./app"
 	"./common"
-	"strings"
-	"regexp"
 )
 
 func main() {
@@ -29,7 +27,7 @@ func BeginServer(){
 		{Url:"/developer/addApps",Check:true,Handle2:app.AddApp},
 		{Url:"/developer/list-apps",Check:true,Handle2:app.ListApps},
 		{Url:"/upload-picture",Check:false,Handle2:app.UploadPicture},
-		{Url:"/upload-file",Check:false,Handle2:app.UplodFile},
+		{Url:"/upload-file",Check:false,Handle2:app.UploadFile},
 		{Url:"/list-file",Check:true,Handle2:app.ListFiles},
 	}
 	common.SetRouters(routers)
