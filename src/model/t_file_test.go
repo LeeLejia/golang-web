@@ -36,7 +36,6 @@ func TestT_File_Insert(t *testing.T) {
 		{
 			FileKey:"xxxxxxxxxxxxxxx",
 			Owner:1,
-			Path:"xxxxxx",
 		},{
 		},{
 			FileKey:"xxxxxxxxxxxxxxx",

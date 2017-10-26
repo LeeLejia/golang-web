@@ -57,7 +57,6 @@ func UploadFile(w http.ResponseWriter, r *http.Request, user *model.T_user){
 		FileName:h.Filename,
 		FileType:model.FILE_TYPE_FILE,
 		Owner:user.Id,
-		Path:filePath,
 		CreatedAt:time.Now(),
 	}
 	err=file.Insert()
@@ -100,7 +99,6 @@ func UploadPicture(w http.ResponseWriter, r *http.Request, user *model.T_user) {
 		FileType:model.FILE_TYPE_PIC,
 		FileName:h.Filename,
 		Owner:user.Id,
-		Path:filePath,
 		CreatedAt:time.Now(),
 	}
 	err=file.Insert()

@@ -14,7 +14,6 @@ CREATE TABLE t_file (
 "file_type" varchar(16) COLLATE "default",
 "file_name" varchar(128) COLLATE "default",
 "owner" int4,
-"path" varchar(255) COLLATE "default",
 "created_at" timestamp(6) DEFAULT CURRENT_TIMESTAMP
 )
 WITH (OIDS=FALSE);
@@ -26,7 +25,6 @@ type T_File struct {
 	FileType  string    `json:"file_type"`
 	FileName  string    `json:"file_name"`
 	Owner     int       `json:"owner"`
-	Path      string    `json:"path"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
@@ -39,25 +37,25 @@ func FileTableName() string {
 }
 
 func (f *T_File) Insert() (err error) {
-	stmt, err := pdb.Session.Prepare(fmt.Sprintf("INSERT INTO %s(file_key,file_name,file_type,owner,path,created_at) "+
+	stmt, err := pdb.Session.Prepare(fmt.Sprintf("INSERT INTO %s(file_key,file_name,file_type,owner,created_at) "+
 			  "VALUES($1,$2,$3,$4,$5,$6)", FileTableName()))
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 	f.CreatedAt = time.Now()
-	_, err = stmt.Exec(f.FileKey,f.FileName,f.FileType,f.Owner,f.Path,f.CreatedAt)
+	_, err = stmt.Exec(f.FileKey,f.FileName,f.FileType,f.Owner,f.CreatedAt)
 	return
 }
 
 func FindFiles(condition, limit, order string) (result []T_File,err error) {
-	rows, err := pdb.Session.Query(fmt.Sprintf("SELECT id,file_key,file_name,file_type,owner,path,created_at FROM %s %s %s %s", FileTableName(), condition, order, limit))
+	rows, err := pdb.Session.Query(fmt.Sprintf("SELECT id,file_key,file_name,file_type,owner,created_at FROM %s %s %s %s", FileTableName(), condition, order, limit))
 	if err != nil {
 		return result, err
 	}
 	for rows.Next() {
 		tmp := T_File{}
-		err = rows.Scan(&tmp.ID,&tmp.FileKey,&tmp.FileName,&tmp.FileType,&tmp.Owner,&tmp.Path,&tmp.CreatedAt)
+		err = rows.Scan(&tmp.ID,&tmp.FileKey,&tmp.FileName,&tmp.FileType,&tmp.Owner,&tmp.CreatedAt)
 		if err==nil {
 			result = append(result, tmp)
 		}
