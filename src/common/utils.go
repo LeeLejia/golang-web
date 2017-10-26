@@ -9,7 +9,7 @@ import (
 获取随机字符串
  */
 func  GetRandomString(l int) string {
-	str := "0123456789qwertyuiopasdfghjklzxcvbnm"
+	str := "0123456789ASDFGHJKLPOIUYTREWQZXCVBNM"
 	bytes := []byte(str)
 	result := []byte{}
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
