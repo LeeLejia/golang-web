@@ -38,7 +38,7 @@ func FileTableName() string {
 
 func (f *T_File) Insert() (err error) {
 	stmt, err := pdb.Session.Prepare(fmt.Sprintf("INSERT INTO %s(file_key,file_name,file_type,owner,created_at) "+
-			  "VALUES($1,$2,$3,$4,$5,$6)", FileTableName()))
+			  "VALUES($1,$2,$3,$4,$5)", FileTableName()))
 	if err != nil {
 		fmt.Println(err.Error())
 		return
