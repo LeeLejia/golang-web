@@ -55,10 +55,6 @@ func (hd *BH) BsHandle(w http.ResponseWriter, r *http.Request){
 		session:=UserSessions[sessionId]
 		if session!=nil{
 			hd.User=session.User
-		}else{
-			hd.User=model.T_user{
-				Id:-1,
-			}
 		}
 		hd.Handle2(w,r,&hd.User)
 	}
