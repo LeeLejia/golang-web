@@ -31,10 +31,10 @@ func BeginServer(){
 		{Url:"/list-file",Check:true,Handle2:app.ListFiles},
 	}
 	common.SetRouters(routers)
-	http.Handle("/",http.StripPrefix("/", http.FileServer(http.Dir(conf.App.StaticPath))))
 
-	//fsh := http.FileServer(http.Dir(conf.App.StaticPath))
-	//http.Handle("/static/", http.StripPrefix("/static/", fsh))
+	//http.Handle("/",http.StripPrefix("/", http.FileServer(http.Dir(conf.App.StaticPath))))
+	http.Handle("/",http.FileServer(http.Dir(conf.App.StaticPath)))
+
 	err:=http.ListenAndServe(fmt.Sprintf(":%s", conf.App.ServerPort), nil)
 	if err!=nil{
 		fmt.Println("服务退出！"+err.Error())
