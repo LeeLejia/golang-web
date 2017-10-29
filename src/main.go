@@ -31,6 +31,8 @@ func BeginServer(){
 		{Url:"/list-file",Check:true,Handle2:app.ListFiles},
 	}
 
+
+
 	common.SetRouters(routers)
 	//http.Handle("/",http.StripPrefix("/", http.FileServer(http.Dir(conf.App.StaticPath))))
 	http.Handle("/",http.FileServer(http.Dir(conf.App.StaticPath)))
