@@ -7,6 +7,7 @@ DBUser = "ubuntu"
 DBPassword = "imjia123"
 DBName = "my-site"
 
+
 staticPath = "./workdir/static"
 Path_Upload_pic = "./workdir/static/upload_pic"
 Path_Upload_file = "./workdir/static/upload_files"
