@@ -30,8 +30,8 @@ func BeginServer(){
 		{Url:"/upload-file",Check:false,Handle2:app.UploadFile},
 		{Url:"/list-file",Check:true,Handle2:app.ListFiles},
 	}
-	common.SetRouters(routers)
 
+	common.SetRouters(routers)
 	//http.Handle("/",http.StripPrefix("/", http.FileServer(http.Dir(conf.App.StaticPath))))
 	http.Handle("/",http.FileServer(http.Dir(conf.App.StaticPath)))
 	fmt.Println("开始服务！")
