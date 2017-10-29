@@ -26,14 +26,14 @@ func BeginServer(){
 	IniTemplate()
 	/**注册路由*/
 	routers:=[]common.BH{
-		{Url:"/login",Check:false,Handle:app.Login},
-		{Url:"/logout",Check:false,Handle:app.Logout},
-		{Url:"/register",Check:false,Handle:app.Register},
-		{Url:"/developer/addApps",Check:true,Handle2:app.AddApp},
-		{Url:"/developer/list-apps",Check:true,Handle2:app.ListApps},
-		{Url:"/upload-picture",Check:false,Handle2:app.UploadPicture},
-		{Url:"/upload-file",Check:false,Handle2:app.UploadFile},
-		{Url:"/list-file",Check:true,Handle2:app.ListFiles},
+		{Url:"/api/login",Check:false,Handle:app.Login},
+		{Url:"/api/logout",Check:false,Handle:app.Logout},
+		{Url:"/api/register",Check:false,Handle:app.Register},
+		{Url:"/api/developer/addApps",Check:true,Handle2:app.AddApp},
+		{Url:"/api/developer/list-apps",Check:true,Handle2:app.ListApps},
+		{Url:"/api/upload-picture",Check:false,Handle2:app.UploadPicture},
+		{Url:"/api/upload-file",Check:false,Handle2:app.UploadFile},
+		{Url:"/api/list-file",Check:true,Handle2:app.ListFiles},
 	}
 	common.SetRouters(routers)
 

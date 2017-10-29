@@ -9,8 +9,8 @@ DBName = "my-site"
 
 
 staticPath = "./workdir/static"
-Path_Upload_pic = "./workdir/static/upload_pic"
-Path_Upload_file = "./workdir/static/upload_files"
+Path_Upload_pic = "./workdir/static/pic"
+Path_Upload_file = "./workdir/static/file"
 
 serverHost="http://localhost"
 serverPort="80"
