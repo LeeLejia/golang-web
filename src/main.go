@@ -10,7 +10,6 @@ import (
 	"html/template"
 	"io/ioutil"
 	"strings"
-	"time"
 )
 
 func main() {
@@ -38,7 +37,7 @@ func BeginServer(){
 	}
 	common.SetRouters(routers)
 
-	http.Handle("/static",http.FileServer(http.Dir(conf.App.StaticPath)))
+	http.Handle("/",http.FileServer(http.Dir(conf.App.StaticPath)))
 	fmt.Println("开始服务！")
 	err:=http.ListenAndServe(fmt.Sprintf(":%s", conf.App.ServerPort), nil)
 	if err!=nil{
@@ -78,24 +77,4 @@ func IniTemplate(){
 	}
 	http.HandleFunc("/developer", handler)
 
-}
-
-
-func xysb(){
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request){
-		t1:=time.Now().Unix()
-		fmt.Println(fmt.Sprintf("===come time: %s",time.Now().String()))
-
-		bs:=make([]byte,512)
-		for {
-			c,_:=r.Body.Read(bs)
-			if c<=0{
-				break
-			}
-			fmt.Println(string(bs))
-		}
-		w.Write([]byte("{\"code\":\"ok\";}"))
-		fmt.Println(fmt.Sprintf("ok time: %s",time.Now().String()))
-		fmt.Println(fmt.Sprintf("时间差 %d",time.Now().Unix()-t1))
-	})
 }
