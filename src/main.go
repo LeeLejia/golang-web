@@ -37,7 +37,7 @@ func BeginServer(){
 	}
 	common.SetRouters(routers)
 
-	http.Handle("/",http.FileServer(http.Dir(conf.App.StaticPath)))
+	http.Handle("/static",http.FileServer(http.Dir(conf.App.StaticPath)))
 	fmt.Println("开始服务！")
 	err:=http.ListenAndServe(fmt.Sprintf(":%s", conf.App.ServerPort), nil)
 	if err!=nil{
