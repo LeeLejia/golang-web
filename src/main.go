@@ -36,8 +36,7 @@ func BeginServer(){
 		{Url:"/api/list-file",Check:true,Handle2:app.ListFiles},
 	}
 	common.SetRouters(routers)
-
-	http.Handle("/static",http.FileServer(http.Dir(conf.App.StaticPath)))
+	http.Handle("/",http.FileServer(http.Dir(conf.App.StaticPath)))
 	fmt.Println("开始服务！")
 	err:=http.ListenAndServe(fmt.Sprintf(":%s", conf.App.ServerPort), nil)
 	if err!=nil{
