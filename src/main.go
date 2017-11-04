@@ -63,7 +63,7 @@ func IniTemplate(){
 		fileName := file.Name()
 		if strings.HasSuffix(fileName, ".html") {
 			htmlFiles = append(htmlFiles, conf.App.StaticPath+"/"+fileName)
-			fmt.Println(fmt.Sprintf("---添加模板,%s",htmlFiles))
+			fmt.Println(fmt.Sprintf("---添加模板,%s",fileName))
 		}
 	}
 	templates:=template.Must(template.ParseFiles(htmlFiles...))
