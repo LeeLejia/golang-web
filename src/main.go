@@ -77,6 +77,6 @@ func IniTemplate(){
 		}
 		http.Redirect(writer,request,"/",http.StatusFound)
 	}
-	http.HandleFunc("/", handler)
-
+	http.HandleFunc("/developer", handler)
+	http.HandleFunc("/admin", handler)
 }
