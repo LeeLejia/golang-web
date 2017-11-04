@@ -42,7 +42,7 @@ func Recv(data []byte, cln net.Conn){
 		log:=model.T_log{
 			Type:model.LOG_TYPE_WARM,
 			Tag:"邀请码验证",
-			User:"客户机",
+			Operator:"客户机",
 			Content:"请求格式错误！"+err.Error(),
 			CreatedAt:time.Now(),
 		}
