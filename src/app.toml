@@ -2,10 +2,14 @@
 appEnv = "normal"
 DBHost = "www.cjwddz.cn"
 DBPort = "5432"
-DBUser = "ubuntu"
+DBUser = "postgres"
 
 DBPassword = "imjia123"
 DBName = "my-site"
+# 最大缓存数目
+logCache = 100
+# 最大日志间隔,单位为秒
+logInterval = 10
 
 
 staticPath = "./workdir/static"
