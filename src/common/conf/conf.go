@@ -21,6 +21,8 @@ type tomlFile struct {
 	ServerHost string `toml:"serverHost"`
 	ServerPort string `toml:"serverPort"`
 	StaticPath string `toml:"staticPath"`
+	LogCache   int 	  `toml:"logCache"`
+	LogInterval int   `toml:"logInterval"`
 }
 
 var App *tomlFile

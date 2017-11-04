@@ -41,11 +41,11 @@ func TestLog_Insert(t *testing.T) {
 		t.Fail()
 	}
 	item:=&T_log{
-		Type:"debug",
-		Tag:"测试用例",
-		User:"tester",
-		Content:"忽略我吧，我是测试用例！",
-		CreatedAt:time.Now(),
+		Type:      "debug",
+		Tag:       "测试用例",
+		Operator:  "tester",
+		Content:   "忽略我吧，我是测试用例！",
+		CreatedAt: time.Now(),
 	}
 	err=item.Insert()
 	if err!=nil{

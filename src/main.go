@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"./app"
 	"./common"
+	"./common/log"
 	"html/template"
 	"io/ioutil"
 	"strings"
@@ -18,6 +19,7 @@ func main() {
 	if err!=nil{
 		fmt.Print("数据库配置错误。")
 	}
+	log.Init()
 	BeginServer()
 }
 
@@ -59,7 +61,7 @@ func IniTemplate(){
 	for _, file := range files {
 		fileName := file.Name()
 		if strings.HasSuffix(fileName, ".html") {
-			htmlFiles = append(htmlFiles, conf.App.StaticPath+fileName)
+			htmlFiles = append(htmlFiles, conf.App.StaticPath+"/"+fileName)
 			fmt.Println(fmt.Sprintf("---添加模板,%s",htmlFiles))
 		}
 	}

@@ -11,7 +11,7 @@ CREATE TABLE t_log (
 "id" serial NOT NULL,
 "type" varchar(16) COLLATE "default",
 "tag" varchar(256) COLLATE "default",
-"user" int4,
+"operator" varchar(128),
 "content" varchar(512) COLLATE "default",
 "created_at" timestamp(6) DEFAULT CURRENT_TIMESTAMP
 )
@@ -24,15 +24,15 @@ const(
 	LOG_TYPE_WARM="warn"
 	LOG_TYPE_ERROR="error"
 	LOG_TYPE_NORMAL="normal"
-
+r
 )
 
 type T_log struct {
-	ID        int64  `json:"id"`
-	Type      string `json:"type"`
-	Tag       string `json:"tag"`
-	User      string `json:"user"`
-	Content   string `json:"content"`
+	ID        int64     `json:"id"`
+	Type      string    `json:"type"`
+	Tag       string    `json:"tag"`
+	Operator  string    `json:"operator"`
+	Content   string    `json:"content"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
@@ -48,19 +48,19 @@ func (m *T_log) Insert() (err error) {
 		return
 	}
 	m.CreatedAt = time.Now()
-	_, err = stmt.Exec(m.Type, m.Tag, m.User, m.Content, m.CreatedAt)
+	_, err = stmt.Exec(m.Type, m.Tag, m.Operator, m.Content, m.CreatedAt)
 	return
 }
 
 func FindLogs(condition, limit, order string) ([]T_log, error) {
 	result := []T_log{}
-	rows, err := pdb.Session.Query(fmt.Sprintf("SELECT id,type,tag,user,content,created_at FROM %s %s %s %s", LogTableName(), condition, order, limit))
+	rows, err := pdb.Session.Query(fmt.Sprintf("SELECT id,type,tag,operator,content,created_at FROM %s %s %s %s", LogTableName(), condition, order, limit))
 	if err != nil {
 		return result, err
 	}
 	for rows.Next() {
 		tmp := T_log{}
-		err = rows.Scan(&tmp.ID, &tmp.Type,&tmp.Tag,&tmp.User, &tmp.Content, &tmp.CreatedAt)
+		err = rows.Scan(&tmp.ID, &tmp.Type,&tmp.Tag,&tmp.Operator, &tmp.Content, &tmp.CreatedAt)
 		result = append(result, tmp)
 	}
 	return result, err
