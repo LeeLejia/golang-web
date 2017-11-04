@@ -54,6 +54,7 @@ func (c *T_app) Insert() (err error) {
 		fmt.Println(err.Error())
 		return
 	}
+	defer stmt.Close()
 	c.CreatedAt = time.Now()
 	expend :="{}"
 	if c.Expend!=nil{

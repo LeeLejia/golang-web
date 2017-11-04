@@ -18,6 +18,7 @@ func main() {
 	err:=pdb.InitDB(conf.App.DBHost, conf.App.DBPort, conf.App.DBUser, conf.App.DBPassword, conf.App.DBName)
 	if err!=nil{
 		fmt.Print("数据库配置错误。")
+		return
 	}
 	log.Init()
 	BeginServer()

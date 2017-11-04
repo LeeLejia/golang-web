@@ -64,6 +64,7 @@ func (u* T_user) Insert() (err error){
 		fmt.Println(err.Error())
 		return
 	}
+	defer stmt.Close()
 	u.UpdatedAt = time.Now()
 	u.CreatedAt = time.Now()
 	if u.Expend==nil{

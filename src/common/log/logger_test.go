@@ -15,13 +15,11 @@ func TestD(t *testing.T) {
 	Init()
 	for i:=0;i<50;i++{
 		D("test","user","msg%d",i)
-		fmt.Println(count)
 	}
-	time.Sleep(time.Second*11)
+	time.Sleep(time.Second*2)
 	D("test","user","msg%d",123)
 	for i:=0;i<100;i++{
 		D("test","user","msg%d",i)
-		fmt.Println(count)
 	}
 	fmt.Println("ok")
 }

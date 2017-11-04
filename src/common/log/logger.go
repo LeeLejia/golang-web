@@ -18,10 +18,10 @@ const (
 	color_magenta //洋红
 )
 
-/**
-	是否插入数据库
- */
+/**是否插入数据库*/
 var CONF_WRITE_TO_DB = true
+var FMT_OUT = false
+
 var logs []model.T_log
 var cache int
 var count int
@@ -30,6 +30,12 @@ var lastTime int64
 func Init() {
 	cache = conf.App.LogCache
 	logInterval = conf.App.LogInterval
+	if cache<=0{
+		cache=100
+	}
+	if logInterval<=0{
+		logInterval=10
+	}
 	lastTime = time.Now().Unix()
 	count=0
 	fmt.Println(fmt.Sprintf("log system->cache:%d,logInterval:%d,lastTime:%d",cache,logInterval,lastTime))
@@ -43,7 +49,9 @@ func D(tag string,operator string,msg ...interface{}) {
 	if len(msg)>1{
 		content=fmt.Sprintf(msg[0].(string),msg[1:])
 	}
-	fmt.Println(fmt.Sprintf("D[tag:%s operator:%s %s] %s",tag,operator,time.Now().Format("2006/01/02 15:04:05"),content))
+	if FMT_OUT{
+		fmt.Println(fmt.Sprintf("D[tag:%s operator:%s %s] %s",tag,operator,time.Now().Format("2006/01/02 15:04:05"),content))
+	}
 	insertSystemLogs("debug",tag,operator,content)
 }
 /**
@@ -54,7 +62,9 @@ func I(tag string,operator string,msg ...interface{}) {
 	if len(msg)>1{
 		content=fmt.Sprintf(msg[0].(string),msg[1:])
 	}
-	fmt.Println(Blue(fmt.Sprintf("I[tag:%s operator:%s %s] %s",tag,operator,time.Now().Format("2006/01/02 15:04:05"),content)))
+	if FMT_OUT {
+		fmt.Println(Blue(fmt.Sprintf("I[tag:%s operator:%s %s] %s", tag, operator, time.Now().Format("2006/01/02 15:04:05"), content)))
+	}
 	insertSystemLogs("info",tag,operator,content)
 }
 /**
@@ -65,7 +75,9 @@ func E(tag string,operator string,msg ...interface{}) {
 	if len(msg)>1{
 		content=fmt.Sprintf(msg[0].(string),msg[1:])
 	}
-	fmt.Println(Red(fmt.Sprintf("E[tag:%s operator:%s %s] %s",tag,operator,time.Now().Format("2006/01/02 15:04:05"),content)))
+	if FMT_OUT {
+		fmt.Println(Red(fmt.Sprintf("E[tag:%s operator:%s %s] %s", tag, operator, time.Now().Format("2006/01/02 15:04:05"), content)))
+	}
 	insertSystemLogs("error",tag,operator,content)
 }
 
@@ -91,13 +103,12 @@ func insertSystemLogs(logType,tag, operator, content string) {
 
 /**
 	强制写出
+	使用事务批量写出日志和单条插入日志分别占用时间单位(100,200)：20：13,51:34
  */
 func flush(){
-	for i:=0;i<count;i++{
-		err := logs[i].Insert()
-		if err != nil {
-			fmt.Println(Red(err.Error()))
-		}
+	err:=model.InsertAllLog(logs[0:count])
+	if err != nil {
+		fmt.Println(Red(err.Error()))
 	}
 	count=0
 }

@@ -43,6 +43,7 @@ func (f *T_File) Insert() (err error) {
 		fmt.Println(err.Error())
 		return
 	}
+	defer stmt.Close()
 	f.CreatedAt = time.Now()
 	_, err = stmt.Exec(f.FileKey,f.FileName,f.FileType,f.Owner,f.CreatedAt)
 	return

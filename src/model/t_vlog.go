@@ -54,6 +54,7 @@ func (m *T_vlog) Insert() (err error) {
 	if err != nil {
 		return
 	}
+	defer stmt.Close()
 	m.CreatedAt = time.Now()
 	_, err = stmt.Exec(m.Tag, m.Code,m.App, m.Machine, m.Content, m.CreatedAt)
 	return

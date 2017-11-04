@@ -67,6 +67,7 @@ func (c *T_code) Insert() (err error) {
 		fmt.Println(err.Error())
 		return
 	}
+	defer stmt.Close()
 	c.CreatedAt = time.Now()
 	consumer:="{}"
 	if c.Consumer!=nil{
