@@ -50,6 +50,7 @@ func (sess *Session)RefreshTime(){
 保存session
  */
 func SaveSession(user model.T_user, osType string) (sessionKey string,session *Session) {
+	/*session懒创建*/
 	if UserSessions == nil {
 		UserSessions = map[string]*Session{}
 	}
@@ -58,6 +59,7 @@ func SaveSession(user model.T_user, osType string) (sessionKey string,session *S
 	session.User = user
 	session.GetToken()
 	UserSessions[sessionKey] = session
+	session.RefreshTime()
 	return
 }
 /**

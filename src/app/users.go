@@ -26,7 +26,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 	log.I("login","unKnow","account:%s,pwd:%s,osType:%s",account,pwd,osType)
 	where := fmt.Sprintf("WHERE  pwd='%s' AND (nick='%s' OR phone='%s' OR email='%s')", pwd, account,account,account)
-	fmt.Println(log.Green(where))
 	user, err := model.FindUsers(where, "", "")
 	if err != nil {
 		common.ReturnEFormat(w, common.CODE_SERVICE_ERR, err.Error())

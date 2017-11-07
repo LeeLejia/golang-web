@@ -77,7 +77,15 @@ func FindApps(condition, limit, order string) (result []T_app,err error) {
 	for rows.Next() {
 		tmp := T_app{}
 		bs:=new([]byte)
-		err = rows.Scan(&tmp.ID, &tmp.Icon,&tmp.AppId, &tmp.Version, &tmp.Name, &tmp.Describe, &tmp.Developer, &tmp.Valid, &tmp.File, &tmp.Src, bs,&tmp.DownloadCount,&tmp.CreatedAt)
+		var ta interface{}
+		var tb interface{}
+		err = rows.Scan(&tmp.ID, &tmp.Icon,&tmp.AppId, &tmp.Version, &tmp.Name, &tmp.Describe, &tmp.Developer, &tmp.Valid, &ta, &tb, bs,&tmp.DownloadCount,&tmp.CreatedAt)
+		if ta!=nil{
+			tmp.File=ta.(string)
+		}
+		if tb!=nil{
+			tmp.Src=tb.(string)
+		}
 		tmp.Expend,_=simplejson.NewJson(*bs)
 		if err==nil {
 			result = append(result, tmp)

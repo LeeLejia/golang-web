@@ -21,12 +21,16 @@ func main() {
 		return
 	}
 	log.Init()
+	defer func() {
+		/**将所有日志写出*/
+		log.Flush()
+	}()
 	BeginServer()
 }
 
 func BeginServer(){
 	/**注册模板*/
-	IniTemplate()
+	//IniTemplate()
 	/**注册路由*/
 	routers:=[]common.BH{
 		{Url:"/api/login",Check:false,Handle:app.Login},

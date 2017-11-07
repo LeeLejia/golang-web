@@ -11,7 +11,7 @@ const(
 	// SESSION登录超时
 	CODE_NOT_ALLOW = 406
 	//需要重新登录
-	CODE_NEET_LOGIN_AGAIN = 1024;
+	CODE_NEET_LOGIN_AGAIN = 1024
 	//角色不符合
 	CODE_ROLE_INVADE = 512
 	//数据库读写错误

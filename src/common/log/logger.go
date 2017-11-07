@@ -96,7 +96,7 @@ func insertSystemLogs(logType,tag, operator, content string) {
 	logs[count]=tl
 	count++
 	if count>=cache || int(time.Now().Unix()-lastTime)>logInterval{
-		flush()
+		Flush()
 	}
 	lastTime=time.Now().Unix()
 }
@@ -105,7 +105,7 @@ func insertSystemLogs(logType,tag, operator, content string) {
 	强制写出
 	使用事务批量写出日志和单条插入日志分别占用时间单位(100,200)：20：13,51:34
  */
-func flush(){
+func Flush(){
 	err:=model.InsertAllLog(logs[0:count])
 	if err != nil {
 		fmt.Println(Red(err.Error()))
