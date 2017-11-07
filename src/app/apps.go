@@ -78,7 +78,7 @@ func ListApps(w http.ResponseWriter, r *http.Request, user *model.T_user){
 	}
 	cond:=""
 	if user.Role==model.USER_ROLE_DEVELOPER{
-		cond=fmt.Sprintf("WHERE DEVELOPER=%d",user.Id)
+		cond=fmt.Sprintf("WHERE developer=%d",user.Id)
 	}
 	apps,err:= model.FindApps(cond,"","")
 	if err!=nil{

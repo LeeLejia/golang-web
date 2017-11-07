@@ -60,7 +60,7 @@ func D(tag string,operator string,msg ...interface{}) {
 func I(tag string,operator string,msg ...interface{}) {
 	var content=(msg[0]).(string)
 	if len(msg)>1{
-		content=fmt.Sprintf(msg[0].(string),msg[1:])
+		content=fmt.Sprintf(msg[0].(string),msg[1:]...)
 	}
 	if FMT_OUT {
 		fmt.Println(Blue(fmt.Sprintf("I[tag:%s operator:%s %s] %s", tag, operator, time.Now().Format("2006/01/02 15:04:05"), content)))
