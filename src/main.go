@@ -13,6 +13,8 @@ import (
 	"strings"
 )
 
+
+
 func main() {
 	conf.Init("./app.toml")
 	err:=pdb.InitDB(conf.App.DBHost, conf.App.DBPort, conf.App.DBUser, conf.App.DBPassword, conf.App.DBName)
@@ -36,8 +38,10 @@ func BeginServer(){
 		{Url:"/api/login",Check:false,Handle:app.Login},
 		{Url:"/api/logout",Check:false,Handle:app.Logout},
 		{Url:"/api/register",Check:false,Handle:app.Register},
-		{Url:"/api/developer/addApps",Check:true,Handle2:app.AddApp},
+		{Url:"/api/developer/add-app",Check:true,Handle2:app.AddApp},
 		{Url:"/api/developer/list-apps",Check:true,Handle2:app.ListApps},
+		{Url:"/api/developer/add-code",Check:true,Handle2:app.AddCode},
+		{Url:"/api/developer/list-codes",Check:true,Handle2:app.ListCodes},
 		{Url:"/api/upload-picture",Check:false,Handle2:app.UploadPicture},
 		{Url:"/api/upload-file",Check:false,Handle2:app.UploadFile},
 		{Url:"/api/list-file",Check:true,Handle2:app.ListFiles},

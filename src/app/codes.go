@@ -8,6 +8,7 @@ import (
 	"time"
 	"strconv"
 	"github.com/bitly/go-simplejson"
+	"../common/log"
 )
 
 /**
@@ -83,6 +84,7 @@ func ListCodes(w http.ResponseWriter, r *http.Request, user *model.T_user){
 	if user.Role==model.USER_ROLE_DEVELOPER{
 		cond=fmt.Sprintf("WHERE DEVELOPER=%d",user.Id)
 	}
+	log.I("ListCodes",fmt.Sprintf("id=%d,nick=%s",user.Id,user.Nick),cond)
 	codes,err:= model.FindCodes(cond,"","")
 	if err!=nil{
 		fmt.Println(err.Error())
