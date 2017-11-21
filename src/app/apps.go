@@ -68,6 +68,7 @@ func AddApp(w http.ResponseWriter, r *http.Request, user *model.T_user) {
 	}
 	common.ReturnFormat(w,200,nil,"操作成功")
 }
+
 /**
 获取App
  */
@@ -80,12 +81,14 @@ func ListApps(w http.ResponseWriter, r *http.Request, user *model.T_user){
 	if user.Role==model.USER_ROLE_DEVELOPER{
 		cond=fmt.Sprintf("where developer=%d",user.Id)
 	}
+
 	apps,err:= model.FindApps(cond,"","")
 	if err!=nil{
 		fmt.Println(err.Error())
 	}
 	common.ReturnFormat(w, 200, apps, "success")
 }
+
 /**
 删除App
  */

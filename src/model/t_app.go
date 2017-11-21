@@ -27,7 +27,6 @@ CREATE TABLE t_app (
 WITH (OIDS=FALSE);
  */
 
-
 type T_app struct {
 	ID            int64     `json:"id"`
 	Icon          string    `json:"icon"`

@@ -87,4 +87,5 @@ func IniTemplate(){
 	}
 	http.HandleFunc("/developer", handler)
 	http.HandleFunc("/admin", handler)
+	http.HandleFunc("/payment", handler)
 }
