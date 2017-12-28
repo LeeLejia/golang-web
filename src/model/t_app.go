@@ -40,22 +40,19 @@ type T_app struct {
 	DownloadCount int              `json:"download_count"`
 	CreatedAt     time.Time        `json:"created_at"`
 }
-var AppModel DbModel
-func InitApp(){
+
+func GetAppModel() (DbModel, error){
 	sc:=SqlController {
 		TableName:      "t_app",
 		InsertColumns:  []string{"icon","app_id","version","name","describe","developer","valid","file","src","expend","download_count","created_at"},
 		QueryColumns:   []string{"id","icon","app_id","version","name","describe","developer","valid","file","src","expend","download_count","created_at"},
-		InSertFields:   InsertFields,
-		QueryField2Obj: QueryField2Obj,
+		InSertFields:   insertFields,
+		QueryField2Obj: queryField2Obj,
 	}
-	AppModel,err:=GetModel(sc)
-	if err!=nil{
-		fmt.Println(err.Error())
-		return
-	}
+	return GetModel(sc)
 }
-func InsertFields(obj interface{}) []interface{} {
+
+func insertFields(obj interface{}) []interface{} {
 	fmt.Println(obj)
 	app:=obj.(*T_app)
 	expend := []byte{}
@@ -69,7 +66,7 @@ func InsertFields(obj interface{}) []interface{} {
 		app.Icon,app.AppId,app.Version,app.Name,app.Describe,app.Developer,app.Valid,app.File,app.Src,expend,app.DownloadCount,app.CreatedAt,
 	}
 }
-func QueryField2Obj(fields []interface{}) interface{} {
+func queryField2Obj(fields []interface{}) interface{} {
 	expend,_:=simplejson.NewJson(GetByteArr(fields[10]))
 	app:=&T_app{
 		ID:GetInt64(fields[0],0),
