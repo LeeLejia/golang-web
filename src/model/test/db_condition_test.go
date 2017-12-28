@@ -25,7 +25,7 @@ func TestCondition(t *testing.T){
 	fmt.Println(cond.GetWhere())
 	fmt.Println(cond.GetParams())
 
-	cond.And(r,"=","s_name")
+	cond.And(r,"like","s_name")
 	fmt.Println(cond.GetWhere())
 	fmt.Println(cond.GetParams())
 

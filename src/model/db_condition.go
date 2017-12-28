@@ -17,7 +17,7 @@ type DbCondition struct{
 }
 
 /**
-添加AND条件
+添加AND条件,compare: > < = >= <= != like
  */
 func (cond *DbCondition)And(r *http.Request,compare string, t_key string) *DbCondition{
 	return cond.andOr(r,compare,t_key,"AND")
@@ -121,7 +121,7 @@ func (cond *DbCondition)andOr(r *http.Request,compare string, t_key string,ao st
 			cond.args =append(cond.args,"%"+value+"%")
 			cond.condStr=fmt.Sprintf("%s %s %s like $%d",cond.condStr,ao,t,cond.condCount)
 		}else{
-			cond.args =append(cond.args,"%"+value+"%")
+			cond.args =append(cond.args,value)
 			cond.condStr=fmt.Sprintf("%s %s %s %s $%d",cond.condStr,ao,t,compare,cond.condCount)
 		}
 		cond.condCount++
