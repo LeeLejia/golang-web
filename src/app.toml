@@ -1,16 +1,15 @@
 # 后台环境设置 dev-测试环境（不发送短信及邮件） normal-正式环境
 appEnv = "normal"
-DBHost = "xxxx"
+DBHost = "www.cjwddz.cn"
 DBPort = "5432"
-DBUser = "xxxx"
+DBUser = "postgres"
 
-DBPassword = "xxxx"
+DBPassword = "imjia123"
 DBName = "my-site"
 # 最大缓存数目
 logCache = 100
 # 最大日志间隔,单位为秒
 logInterval = 10
-
 
 staticPath = "./workdir/static"
 Path_Upload_pic = "./workdir/static/pic"

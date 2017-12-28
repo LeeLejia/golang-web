@@ -64,7 +64,7 @@ func (hd *BH) BsHandle(w http.ResponseWriter, r *http.Request){
 设置跨域访问
  */
 func SetContent(w http.ResponseWriter) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:4200")             //允许访问所有域
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:88")             //允许访问所有域
 	w.Header().Set("Access-Control-Allow-Credentials","true");
 	w.Header().Add("Access-Control-Allow-Headers", "x-requested-with,content-type") //header的类型
 	w.Header().Set("content-type", "application/json")             //返回数据格式是json

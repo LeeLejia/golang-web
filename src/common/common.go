@@ -12,6 +12,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"net/url"
 )
 
 type R struct {
@@ -114,3 +115,4 @@ func SendToMail(user, password, host, to, subject, body, mailtype string) error 
 	err := smtp.SendMail(host, auth, user, send_to, msg)
 	return err
 }
+
