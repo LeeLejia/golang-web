@@ -59,7 +59,7 @@ func (cond *DbCondition)Order(order string)*DbCondition {
  */
 func (cond *DbCondition)GetWhere()string{
 	if cond.limit_pos>0 && cond.limit_len>0{
-		return fmt.Sprintf("WHERE %s %s limit $%d offset $%d",cond.condStr,cond.order,cond.condCount+1,cond.condCount+2)
+		return fmt.Sprintf("WHERE %s %s limit $%d offset $%d",cond.condStr,cond.order,cond.condCount,cond.condCount+1)
 	}else if cond.limit_pos>0{
 		return fmt.Sprintf("WHERE %s %s offset $%d",cond.condStr,cond.order,cond.condCount+1)
 	}else if cond.limit_len>0{
