@@ -2,7 +2,6 @@ package model
 
 import (
 	"time"
-	"fmt"
 	"github.com/bitly/go-simplejson"
 )
 
@@ -53,7 +52,6 @@ func GetAppModel() (DbModel, error){
 }
 
 func insertFields(obj interface{}) []interface{} {
-	fmt.Println(obj)
 	app:=obj.(*T_app)
 	expend := []byte{}
 	if app.Expend != nil {

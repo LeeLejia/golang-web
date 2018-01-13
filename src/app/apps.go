@@ -61,7 +61,7 @@ func AddApp(w http.ResponseWriter, r *http.Request, user *model.T_user) {
 		DownloadCount:0,
 		CreatedAt:time.Now(),
 	}
-	err:=model.AppModel.Insert(app)
+	err:=AppModel.Insert(app)
 	if err!=nil{
 		common.ReturnEFormat(w,common.CODE_DB_RW_ERR, "数据库插入错误")
 		return
@@ -85,14 +85,13 @@ func ListApps(w http.ResponseWriter, r *http.Request, user *model.T_user){
 		c++
 
 	}
-	name := r.PostFormValue("name")
-	role := r.PostFormValue("role")
-
+	cdt:=&model.DbCondition{}
 	if user.Role==model.USER_ROLE_DEVELOPER{
-		cond=fmt.Sprintf("where developer=%d",user.Id)
+		cdt=cdt.And2("=","developer",user.Id)
 	}
-
-	apps,err:= model.AppModel.Query(cond,"","")
+	cdt=cdt.And(r,"=","b_valid").And(r,"like","s_name")
+	cdt=cdt.Order(r.PostFormValue("order")).Limit(r,"start","len")
+	apps,err:= AppModel.Query(cdt.GetWhere())
 	if err!=nil{
 		fmt.Println(err.Error())
 	}

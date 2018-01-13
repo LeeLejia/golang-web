@@ -23,6 +23,40 @@ func (cond *DbCondition)And(r *http.Request,compare string, t_key string) *DbCon
 	return cond.andOr(r,compare,t_key,"AND")
 }
 /**
+添加AND条件,compare: > < = >= <= != like
+ */
+func (cond *DbCondition)And2(compare string, key string,value interface{}) *DbCondition{
+	if cond.condStr==""{
+		// 初始化参数
+		cond.args = make([]interface{},0)
+		cond.condCount=1
+	}
+	cond.args =append(cond.args,value)
+	cond.condStr=fmt.Sprintf("%s AND %s %s $%d",cond.condStr,key,compare,cond.condCount)
+	cond.condCount++
+	if len(cond.condStr)>4 && cond.condStr[0:4]==" AND"{
+		cond.condStr=cond.condStr[5:]
+	}
+	return cond
+}
+/**
+添加AND条件,compare: > < = >= <= != like
+ */
+func (cond *DbCondition)Or2(compare string, key string,value interface{}) *DbCondition{
+	if cond.condStr==""{
+		// 初始化参数
+		cond.args = make([]interface{},0)
+		cond.condCount=1
+	}
+	cond.args =append(cond.args,value)
+	cond.condStr=fmt.Sprintf("%s AND %s %s $%d",cond.condStr,key,compare,cond.condCount)
+	cond.condCount++
+	if len(cond.condStr)>4 && cond.condStr[0:4]==" OR "{
+		cond.condStr=cond.condStr[5:]
+	}
+	return cond
+}
+/**
 添加OR条件
  */
 func (cond *DbCondition)Or(r *http.Request,compare string, t_key string) *DbCondition{
@@ -64,6 +98,9 @@ func (cond *DbCondition)GetWhere()string{
 		return fmt.Sprintf("WHERE %s %s offset $%d",cond.condStr,cond.order,cond.condCount+1)
 	}else if cond.limit_len>0{
 		return fmt.Sprintf("WHERE %s %s limit $%d",cond.condStr,cond.order,cond.condCount+1)
+	}
+	if cond.condStr ==""{
+		return fmt.Sprintf("%s",cond.order)
 	}
 	return fmt.Sprintf("WHERE %s %s",cond.condStr,cond.order)
 }

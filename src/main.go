@@ -22,9 +22,11 @@ func main() {
 		fmt.Print("数据库配置错误。")
 		return
 	}
+	// 初始化模型
+	app.Init()
+	// 初始化日志系统
 	log.Init()
 	defer func() {
-		/**将所有日志写出*/
 		log.Flush()
 	}()
 	BeginServer()

@@ -98,7 +98,9 @@ func (m *DbModel) Insert(obj interface{}) (err error) {
 conditionAndLimit：where id > $1 order by  limit $2 offset $3
  */
 func (m *DbModel) Query(condiAOrderALimit string, args ...interface{}) (result []interface{}, err error) {
-	stmt, err := pdb.Session.Prepare(fmt.Sprintf("SELECT %s FROM %s %s", m.sc.queryColumns, m.GetTableName(), condiAOrderALimit))
+	sql:=fmt.Sprintf("SELECT %s FROM %s %s", m.sc.queryColumns, m.GetTableName(), condiAOrderALimit)
+	fmt.Println(sql)
+	stmt, err := pdb.Session.Prepare(sql)
 	if err != nil {
 		return result, err
 	}
@@ -131,6 +133,9 @@ args: 5 'cjwddz'
 func (m *DbModel) Count(condition string,args ...interface{}) (count int, err error) {
 	count = 0
 	stmt,err:=pdb.Session.Prepare(fmt.Sprintf("SELECT COUNT(*) FROM %s %s", m.GetTableName(), condition))
+	if err!=nil{
+		return 0,err
+	}
 	err = stmt.QueryRow(args...).Scan(&count)
 	return
 }
@@ -147,6 +152,20 @@ func (m *DbModel) Update(setAndCondition string,args ...interface{}) (err error)
 	_, err = stmt.Exec(args...)
 	return
 }
+/**
+删除数据
+condition: where id = $3
+args: 3 'cjwddz' 5
+ */
+func (m *DbModel) Delete(condition string,args ...interface{})error{
+	stmt,err:=pdb.Session.Prepare(fmt.Sprintf("DELETE FROM %s %s", m.GetTableName(), condition))
+	if err!=nil{
+		return err
+	}
+	_,err = stmt.Exec(args...)
+	return err
+}
+
 
 /**
 安全断言

@@ -79,9 +79,13 @@ func TestT(t *testing.T) {
 	for _,obj:=range res{
 		fmt.Println(*obj.(*model.T_app))
 	}
+	err= m.Delete("where name = $1","upName")
+	if err!=nil{
+		fmt.Println(err.Error())
+		return
+	}
 }
 func InsertFields(obj interface{}) []interface{} {
-	fmt.Println(obj)
 	app:=obj.(*model.T_app)
 	expend := []byte{}
 	if app.Expend != nil {
