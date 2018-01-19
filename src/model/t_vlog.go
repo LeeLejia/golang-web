@@ -2,9 +2,9 @@ package model
 
 import (
 	"time"
-	"fmt"
-	"../pdb"
+	m "github.com/cjwddz/fast-model"
 )
+
 /*
 DROP TABLE IF EXISTS t_vlog;
 CREATE TABLE t_vlog (
@@ -44,38 +44,32 @@ type T_vlog struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func VLogTableName() string {
-	return "t_vlog"
+func GetVLogModel() (m.DbModel, error){
+	sc:=m.SqlController {
+		TableName:      "t_vlog",
+		InsertColumns:  []string{"tag","code","app_id","machine","content","created_at"},
+		QueryColumns:   []string{"id","tag","code","app_id","machine","content","created_at"},
+		InSertFields:   insertVLogFields,
+		QueryField2Obj: queryVLogField2Obj,
+	}
+	return m.GetModel(sc)
 }
 
-func (m *T_vlog) Insert() (err error) {
-	stmt, err := pdb.Session.Prepare(fmt.Sprintf("INSERT INTO %s(tag,code,app_id,machine,content,created_at) "+
-		"VALUES($1,$2,$3,$4,$5,$6)", VLogTableName()))
-	if err != nil {
-		return
+func insertVLogFields(obj interface{}) []interface{} {
+	vlog:=obj.(T_vlog)
+	return []interface{}{
+		vlog.Tag,vlog.Code,vlog.App,vlog.Machine,vlog.Content,vlog.CreatedAt,
 	}
-	defer stmt.Close()
-	m.CreatedAt = time.Now()
-	_, err = stmt.Exec(m.Tag, m.Code,m.App, m.Machine, m.Content, m.CreatedAt)
-	return
 }
-
-func FindVLogs(condition, limit, order string) ([]T_vlog, error) {
-	result := []T_vlog{}
-	rows, err := pdb.Session.Query(fmt.Sprintf("SELECT id,tag,code,app_id,machine,content,created_at FROM %s %s %s %s", VLogTableName(), condition, order, limit))
-	if err != nil {
-		return result, err
+func queryVLogField2Obj(fields []interface{}) interface{} {
+	vl:=T_vlog{
+		ID:m.GetInt64(fields[0],0),
+		Tag:m.GetString(fields[1]),
+		Code:m.GetString(fields[2]),
+		App:m.GetString(fields[3]),
+		Machine:m.GetString(fields[4]),
+		Content:m.GetString(fields[5]),
+		CreatedAt:m.GetTime(fields[6],time.Now()),
 	}
-	for rows.Next() {
-		tmp := T_vlog{}
-		err = rows.Scan(&tmp.ID, &tmp.Tag,&tmp.App,&tmp.Code, &tmp.Machine, &tmp.Content, &tmp.CreatedAt)
-		result = append(result, tmp)
-	}
-	return result, err
-}
-
-func CountVLogs(condition string) (count int, err error) {
-	count = 0
-	err = pdb.Session.QueryRow(fmt.Sprintf("SELECT COUNT(*) FROM %s %s", VLogTableName(), condition)).Scan(&count)
-	return
+	return vl
 }

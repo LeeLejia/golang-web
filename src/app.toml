@@ -3,6 +3,7 @@ appEnv = "normal"
 DBHost = "www.cjwddz.cn"
 DBPort = "5432"
 DBUser = "postgres"
+DBDriver = "postgres"
 
 DBPassword = "imjia123"
 DBName = "my-site"

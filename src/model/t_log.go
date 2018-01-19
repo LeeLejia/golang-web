@@ -2,8 +2,7 @@ package model
 
 import (
 	"time"
-	"fmt"
-	"../pdb"
+	m "github.com/cjwddz/fast-model"
 )
 /*
 DROP TABLE IF EXISTS t_log;
@@ -11,7 +10,7 @@ CREATE TABLE t_log (
 "id" serial NOT NULL,
 "type" varchar(16) COLLATE "default",
 "tag" varchar(256) COLLATE "default",
-"operator" varchar(128),
+"operator" varchar(128) COLLATE "default",
 "content" varchar(512) COLLATE "default",
 "created_at" timestamp(6) DEFAULT CURRENT_TIMESTAMP
 )
@@ -24,7 +23,6 @@ const(
 	LOG_TYPE_WARM="warn"
 	LOG_TYPE_ERROR="error"
 	LOG_TYPE_NORMAL="normal"
-r
 )
 
 type T_log struct {
@@ -36,57 +34,30 @@ type T_log struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func LogTableName() string {
-	return "t_log"
+func GetLogModel() (m.DbModel, error){
+	sc:=m.SqlController {
+		TableName:      "t_log",
+		InsertColumns:  []string{"type","tag","operator","content","created_at"},
+		QueryColumns:   []string{"id","type","tag","operator","content","created_at"},
+		InSertFields:   insertLogFields,
+		QueryField2Obj: queryLogField2Obj,
+	}
+	return m.GetModel(sc)
 }
-
-func InsertAllLog(ls []T_log)(err error){
-	tx,err:=pdb.Session.Begin()
-	if err != nil {
-		fmt.Println("Beginx error:", err)
-		return
+func insertLogFields(obj interface{}) []interface{} {
+	log :=obj.(T_log)
+	return []interface{}{
+		log.Type, log.Tag, log.Operator, log.Content, log.CreatedAt,
 	}
-	sql:=fmt.Sprintf("INSERT INTO %s(type,tag,operator,content,created_at) "+
-		"VALUES($1,$2,$3,$4,$5)", LogTableName())
-	for _,m:=range ls{
-		_,err:=tx.Exec(sql,m.Type, m.Tag, m.Operator, m.Content, m.CreatedAt)
-		if err!=nil{
-			tx.Rollback()
-		}
-	}
-	tx.Commit()
-	return
 }
-
-func (m *T_log) Insert() (err error) {
-	stmt, err := pdb.Session.Prepare(fmt.Sprintf("INSERT INTO %s(type,tag,operator,content,created_at) "+
-			  "VALUES($1,$2,$3,$4,$5)", LogTableName()))
-	if err != nil {
-		fmt.Println(err.Error())
-		return
+func queryLogField2Obj(fields []interface{}) interface{} {
+	log:=T_log{
+		ID:m.GetInt64(fields[0],0),
+		Type:m.GetString(fields[1]),
+		Tag:m.GetString(fields[2]),
+		Operator:m.GetString(fields[3]),
+		Content:m.GetString(fields[4]),
+		CreatedAt:m.GetTime(fields[5],time.Now()),
 	}
-	defer stmt.Close()
-	m.CreatedAt = time.Now()
-	_, err = stmt.Exec(m.Type, m.Tag, m.Operator, m.Content, m.CreatedAt)
-	return
-}
-
-func FindLogs(condition, limit, order string) ([]T_log, error) {
-	result := []T_log{}
-	rows, err := pdb.Session.Query(fmt.Sprintf("SELECT id,type,tag,operator,content,created_at FROM %s %s %s %s", LogTableName(), condition, order, limit))
-	if err != nil {
-		return result, err
-	}
-	for rows.Next() {
-		tmp := T_log{}
-		err = rows.Scan(&tmp.ID, &tmp.Type,&tmp.Tag,&tmp.Operator, &tmp.Content, &tmp.CreatedAt)
-		result = append(result, tmp)
-	}
-	return result, err
-}
-
-func CountLogs(condition string) (count int, err error) {
-	count = 0
-	err = pdb.Session.QueryRow(fmt.Sprintf("SELECT COUNT(*) FROM %s %s", LogTableName(), condition)).Scan(&count)
-	return
+	return log
 }

@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 	"github.com/bitly/go-simplejson"
+	m "github.com/cjwddz/fast-model"
 )
 
 /*
@@ -11,7 +12,7 @@ CREATE TABLE t_code (
 "id" serial NOT NULL,
 "code" varchar(16) UNIQUE COLLATE "default",
 "app_id" varchar(16) COLLATE "default",
-"developer" int4,
+"developer" varchar(128) COLLATE "default",
 "consumer" jsonb NOT NULL,
 "describe" varchar(255) COLLATE "default",
 "valid" bool DEFAULT TRUE,
@@ -38,13 +39,12 @@ INSERT INTO "public"."t_code" VALUES ('12', 'eks9', 'old1002', '1001', '{}', 'qq
 INSERT INTO "public"."t_code" VALUES ('13', 'n34ik', 'old1002', '1001', '{}', 'QQ519050901,咖啡男人', 't', '-1', 'f', '2017-10-22 08:45:42', '2017-10-22 08:45:45', '2017-03-19 10:04:25');
 INSERT INTO "public"."t_code" VALUES ('14', 'n3i45', 'old1002', '1001', '{}', 'QQ454999156', 'f', '-1', 'f', '2017-10-22 08:45:42', '2017-10-22 08:45:45', '2017-03-19 10:04:25');
 INSERT INTO "public"."t_code" VALUES ('15', 's23i21', 'old1002', '1001', '{}', '', 't', '-1', 'f', '2017-10-22 08:45:42', '2017-10-22 08:45:45', '2017-03-19 10:04:25');
-
  */
 type T_code struct {
 	ID           int64            `json:"id"`
 	Code         string           `json:"code"`
 	AppId        string           `json:"app_id"`
-	Developer    int              `json:"developer"`
+	Developer    string           `json:"developer"`
 	Consumer     *simplejson.Json `json:"consumer"`
 	Describe     string           `json:"describe"`
 	Valid        bool             `json:"valid"`
@@ -54,20 +54,21 @@ type T_code struct {
 	EndTime      time.Time        `json:"end_time"`
 	CreatedAt    time.Time        `json:"created_at"`
 }
-func GetCodeModel() (DbModel, error){
-	sc:=SqlController {
+
+func GetCodeModel() (m.DbModel, error){
+	sc:=m.SqlController {
 		TableName:      "t_code",
 		InsertColumns:  []string{"code","app_id","developer","consumer","describe","valid","machine_count","enable_time","start_time","end_time","created_at"},
 		QueryColumns:   []string{"id","code","app_id","developer","consumer","describe","valid","machine_count","enable_time","start_time","end_time","created_at"},
-		InSertFields:   insertCodesFields,
-		QueryField2Obj: queryCodesField2Obj,
+		InSertFields:   insertCodeFields,
+		QueryField2Obj: queryCodeField2Obj,
 	}
-	return GetModel(sc)
+	return m.GetModel(sc)
 }
 
-func insertCodesFields(obj interface{}) []interface{} {
-	code :=obj.(*T_code)
-	consumer := []byte{}
+func insertCodeFields(obj interface{}) []interface{} {
+	code :=obj.(T_code)
+	consumer := []byte("{}")
 	if code.Consumer != nil {
 		bs, err := code.Consumer.MarshalJSON()
 		if err==nil{
@@ -78,21 +79,21 @@ func insertCodesFields(obj interface{}) []interface{} {
 		code.Code, code.AppId, code.Developer, consumer, code.Describe, code.Valid, code.MachineCount, code.EnableTime, code.StartTime, code.EndTime, code.CreatedAt,
 	}
 }
-func queryCodesField2Obj(fields []interface{}) interface{} {
-	consumer,_:=simplejson.NewJson(GetByteArr(fields[4]))
-	code:=&T_code{
-		ID:GetInt64(fields[0],0),
-		Code:GetString(fields[1]),
-		AppId:GetString(fields[2]),
-		Developer:GetInt(fields[3],-1),
+func queryCodeField2Obj(fields []interface{}) interface{} {
+	consumer,_:=simplejson.NewJson(m.GetByteArr(fields[4]))
+	code:=T_code{
+		ID:m.GetInt64(fields[0],0),
+		Code:m.GetString(fields[1]),
+		AppId:m.GetString(fields[2]),
+		Developer:m.GetString(fields[3]),
 		Consumer:consumer,
-		Describe:GetString(fields[5]),
-		Valid:GetBool(fields[6],false),
-		MachineCount:GetInt(fields[7],-1),
-		EnableTime:GetBool(fields[8],false),
-		StartTime:GetTime(fields[9],time.Now()),
-		EndTime:GetTime(fields[10],time.Now()),
-		CreatedAt:GetTime(fields[11],time.Now()),
+		Describe:m.GetString(fields[5]),
+		Valid:m.GetBool(fields[6],false),
+		MachineCount:m.GetInt(fields[7],-1),
+		EnableTime:m.GetBool(fields[8],false),
+		StartTime:m.GetTime(fields[9],time.Now()),
+		EndTime:m.GetTime(fields[10],time.Now()),
+		CreatedAt:m.GetTime(fields[11],time.Now()),
 	}
 	return code
 }

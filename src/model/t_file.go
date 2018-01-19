@@ -1,71 +1,56 @@
 package model
 
 import (
-	"fmt"
-	"../pdb"
 	"time"
+	m "github.com/cjwddz/fast-model"
 )
 
 /*
 DROP TABLE IF EXISTS t_file;
 CREATE TABLE t_file (
 "id" serial NOT NULL,
-"file_key" varchar(16) UNIQUE COLLATE "default",
-"file_type" varchar(16) COLLATE "default",
-"file_name" varchar(128) COLLATE "default",
-"owner" int4,
+"key" varchar(16) UNIQUE COLLATE "default",
+"type" varchar(16) COLLATE "default",
+"name" varchar(128) COLLATE "default",
+"owner" varchar(128) COLLATE "default",
 "created_at" timestamp(6) DEFAULT CURRENT_TIMESTAMP
 )
 WITH (OIDS=FALSE);
  */
-
 type T_File struct {
 	ID        int64     `json:"id"`
-	FileKey   string    `json:"file_key"`
-	FileType  string    `json:"file_type"`
-	FileName  string    `json:"file_name"`
-	Owner     int       `json:"owner"`
+	Key       string    `json:"key"`
+	Type      string    `json:"type"`
+	Name      string    `json:"name"`
+	Owner     string    `json:"owner"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
-const(
-	FILE_TYPE_PIC = "picture"
-	FILE_TYPE_FILE = "file"
-)
-func FileTableName() string {
-	return "t_file"
+func GetFileModel() (m.DbModel, error){
+	sc:=m.SqlController {
+		TableName:      "t_file",
+		InsertColumns:  []string{"key","type","name","owner","created_at"},
+		QueryColumns:   []string{"id","key","type","name","owner","created_at"},
+		InSertFields:   insertFileFields,
+		QueryField2Obj: queryFileField2Obj,
+	}
+	return m.GetModel(sc)
 }
 
-func (f *T_File) Insert() (err error) {
-	stmt, err := pdb.Session.Prepare(fmt.Sprintf("INSERT INTO %s(file_key,file_name,file_type,owner,created_at) "+
-			  "VALUES($1,$2,$3,$4,$5)", FileTableName()))
-	if err != nil {
-		fmt.Println(err.Error())
-		return
+func insertFileFields(obj interface{}) []interface{} {
+	file:=obj.(T_File)
+	return []interface{}{
+		file.Key, file.Type, file.Name, file.Owner, file.CreatedAt,
 	}
-	defer stmt.Close()
-	f.CreatedAt = time.Now()
-	_, err = stmt.Exec(f.FileKey,f.FileName,f.FileType,f.Owner,f.CreatedAt)
-	return
 }
-
-func FindFiles(condition, limit, order string) (result []T_File,err error) {
-	rows, err := pdb.Session.Query(fmt.Sprintf("SELECT id,file_key,file_name,file_type,owner,created_at FROM %s %s %s %s", FileTableName(), condition, order, limit))
-	if err != nil {
-		return result, err
+func queryFileField2Obj(fields []interface{}) interface{} {
+	file:=T_File{
+		ID:        m.GetInt64(fields[0],0),
+		Key:       m.GetString(fields[1]),
+		Type:      m.GetString(fields[2]),
+		Name:      m.GetString(fields[3]),
+		Owner:     m.GetString(fields[4]),
+		CreatedAt: m.GetTime(fields[5],time.Now()),
 	}
-	for rows.Next() {
-		tmp := T_File{}
-		err = rows.Scan(&tmp.ID,&tmp.FileKey,&tmp.FileName,&tmp.FileType,&tmp.Owner,&tmp.CreatedAt)
-		if err==nil {
-			result = append(result, tmp)
-		}
-	}
-	return result, err
-}
-
-func CountFiles(condition string) (count int, err error) {
-	count = 0
-	err = pdb.Session.QueryRow(fmt.Sprintf("SELECT COUNT(*) FROM %s %s", FileTableName(), condition)).Scan(&count)
-	return
+	return file
 }
