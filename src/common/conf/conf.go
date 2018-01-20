@@ -42,7 +42,9 @@ func Init(filePath string) {
 	fmt.Println(fmt.Sprintf("\x1b[%dm配置:%s\x1b[0m",uint8(93),App))
 	checkDirs()
 }
-
+/**
+检查文件目录
+ */
 func checkDirs(){
 	for _,path:=range []string{App.StaticPath,App.PathPic,App.PathFile} {
 		rp:=RealFilePath(path)

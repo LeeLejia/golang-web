@@ -3,7 +3,6 @@ package main
 import (
 	"./common/conf"
 	"fmt"
-	"./pdb"
 	"net/http"
 	"./app"
 	"./common"
@@ -16,12 +15,8 @@ import (
 
 
 func main() {
+	// 初始化配置文件
 	conf.Init("./app.toml")
-	err:=pdb.InitDB(conf.App.DBHost, conf.App.DBPort, conf.App.DBUser, conf.App.DBPassword, conf.App.DBName)
-	if err!=nil{
-		fmt.Print("数据库配置错误。")
-		return
-	}
 	// 初始化模型
 	app.Init()
 	// 初始化日志系统

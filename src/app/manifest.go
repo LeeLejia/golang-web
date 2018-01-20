@@ -4,6 +4,7 @@ import (
 	"github.com/cjwddz/fast-model"
 	"fmt"
 	m "../model"
+	"../common/conf"
 )
 var AppModel model.DbModel
 var CodeModel model.DbModel
@@ -13,6 +14,7 @@ var VlogModel model.DbModel
 var LogModel model.DbModel
 
 func Init(){
+	model.InitDB(conf.App.DBHost, conf.App.DBPort, conf.App.DBUser, conf.App.DBPassword, conf.App.DBName, "postgres")
 	app,err:= m.GetAppModel()
 	if err!=nil{
 		fmt.Println(err.Error())
