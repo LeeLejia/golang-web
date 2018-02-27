@@ -1,11 +1,11 @@
-package app
+package bak
 
 import (
 	"testing"
-	"../common"
+	"../../common"
 	"net/url"
 	"fmt"
-	"../model"
+	"../../model"
 	"github.com/bitly/go-simplejson"
 )
 

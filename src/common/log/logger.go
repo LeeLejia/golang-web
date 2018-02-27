@@ -6,8 +6,11 @@ package log
 import (
 	"fmt"
 	"../../model"
+	fm "github.com/cjwddz/fast-model"
 	"time"
 	"../conf"
+	"runtime"
+	"strings"
 )
 
 const (
@@ -20,13 +23,14 @@ const (
 
 /**是否插入数据库*/
 var CONF_WRITE_TO_DB = true
-var FMT_OUT = false
+var FMT_OUT = true
 
 var logs []model.T_log
 var cache int
 var count int
 var logInterval int
 var lastTime int64
+var LogModel fm.DbModel
 func Init() {
 	cache = conf.App.LogCache
 	logInterval = conf.App.LogInterval
@@ -40,6 +44,12 @@ func Init() {
 	count=0
 	fmt.Println(fmt.Sprintf("log system->cache:%d,logInterval:%d,lastTime:%d",cache,logInterval,lastTime))
 	logs=make([]model.T_log,cache)
+	l,err:=model.GetLogModel()
+	if err!=nil{
+		fmt.Println(err.Error())
+		return
+	}
+	LogModel = l
 }
 /**
 	debug
@@ -50,9 +60,22 @@ func D(tag string,operator string,msg ...interface{}) {
 		content=fmt.Sprintf(msg[0].(string),msg[1:])
 	}
 	if FMT_OUT{
-		fmt.Println(fmt.Sprintf("D[tag:%s operator:%s %s] %s",tag,operator,time.Now().Format("2006/01/02 15:04:05"),content))
+		fmt.Println(fmt.Sprintf("D[tag:%s,operator:%s,time:%s]>>%s",tag,operator,time.Now().Format("2006/01/02 15:04:05"),content))
 	}
 	insertSystemLogs("debug",tag,operator,content)
+}
+/**
+	warn
+ */
+func W(tag string,operator string,msg ...interface{}) {
+	var content=(msg[0]).(string)
+	if len(msg)>1{
+		content=fmt.Sprintf(msg[0].(string),msg[1:])
+	}
+	if FMT_OUT{
+		fmt.Println(fmt.Sprintf("W[tag:%s,operator:%s,time:%s]>>%s",tag,operator,time.Now().Format("2006/01/02 15:04:05"),content))
+	}
+	insertSystemLogs("warn",tag,operator,content)
 }
 /**
 	info
@@ -63,7 +86,7 @@ func I(tag string,operator string,msg ...interface{}) {
 		content=fmt.Sprintf(msg[0].(string),msg[1:]...)
 	}
 	if FMT_OUT {
-		fmt.Println(Blue(fmt.Sprintf("I[tag:%s operator:%s %s] %s", tag, operator, time.Now().Format("2006/01/02 15:04:05"), content)))
+		fmt.Println(Blue(fmt.Sprintf("I[tag:%s,operator:%s,time:%s]>>%s", tag, operator, time.Now().Format("2006/01/02 15:04:05"), content)))
 	}
 	insertSystemLogs("info",tag,operator,content)
 }
@@ -80,6 +103,33 @@ func E(tag string,operator string,msg ...interface{}) {
 	}
 	insertSystemLogs("error",tag,operator,content)
 }
+/**
+	normal
+ */
+func N(tag string,operator string,msg ...interface{}) {
+	var content=(msg[0]).(string)
+	if len(msg)>1{
+		content=fmt.Sprintf(msg[0].(string),msg[1:])
+	}
+	if FMT_OUT {
+		fmt.Println(Green(fmt.Sprintf("N[tag:%s,operator:%s,time:%s]>>%s", tag, operator, time.Now().Format("2006/01/02 15:04:05"), content)))
+	}
+	insertSystemLogs("normal",tag,operator,content)
+}
+/**
+提示用户
+ */
+func Notify(tag string,operator string,msg ...interface{}){
+	var content=(msg[0]).(string)
+	if len(msg)>1{
+		content=fmt.Sprintf(msg[0].(string),msg[1:])
+	}
+	if FMT_OUT {
+		fmt.Println(Magenta(fmt.Sprintf("Notify[tag:%s,operator:%s,time:%s]>>%s", tag, operator, time.Now().Format("2006/01/02 15:04:05"), content)))
+	}
+	// todo notify action
+	insertSystemLogs("notify",tag,operator,content)
+}
 
 /**
 	写入数据库
@@ -88,11 +138,15 @@ func insertSystemLogs(logType,tag, operator, content string) {
 	if !CONF_WRITE_TO_DB{
 		return
 	}
-	tl := model.T_log{}
-	tl.Tag=tag
-	tl.Type=logType
-	tl.Operator= operator
-	tl.Content= content
+	_,f,l,_:=runtime.Caller(2)
+	cl:=fmt.Sprintf("%s line:%d",strings.TrimPrefix(f,conf.AppRootPath),l)
+	tl := model.T_log{
+		Tag:tag,
+		Type:logType,
+		Caller:cl,
+		Operator:operator,
+		Content:content,
+	}
 	logs[count]=tl
 	count++
 	if count>=cache || int(time.Now().Unix()-lastTime)>logInterval{
@@ -106,9 +160,11 @@ func insertSystemLogs(logType,tag, operator, content string) {
 	使用事务批量写出日志和单条插入日志分别占用时间单位(100,200)：20：13,51:34
  */
 func Flush(){
-	err:=model.InsertAllLog(logs[0:count])
-	if err != nil {
-		fmt.Println(Red(err.Error()))
+	for i:=0;i<count;i++{
+		err:=LogModel.Insert(logs[i])
+		if err != nil {
+			fmt.Println(Red(err.Error()))
+		}
 	}
 	count=0
 }

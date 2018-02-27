@@ -10,7 +10,7 @@ import (
 )
 
 func TestT_vlog(t *testing.T) {
-	conf.Init("/home/cjwddz/桌面/git-project/golang-web/src/app.toml")
+	conf.Init("/home/cjwddz/桌面/git-project/golang-web/src/task.toml")
 	md, err := m.GetVLogModel()
 	if err != nil {
 		t.Fail()

@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	conf.Init("./app.toml")
+	conf.Init("./task.toml")
 	fmt.Println("初始化数据库")
 	err:=pdb.InitDB(conf.App.DBHost, conf.App.DBPort, conf.App.DBUser, conf.App.DBPassword, conf.App.DBName)
 	if err!=nil{

@@ -10,19 +10,28 @@ import (
 )
 
 type tomlFile struct {
+	// 数据库
 	DBHost     string `toml:"DBHost"`
 	DBPort     string `toml:"DBPort"`
 	DBUser     string `toml:"DBUser"`
 	DBPassword string `toml:"DBPassword"`
 	DBName     string `toml:"DBName"`
 	DBNameTest string `toml:"DBNameTest"`
-	PathFile   string `toml:"Path_Upload_file"`
-	PathPic	   string `toml:"Path_Upload_pic"`
+	DBDriver   string `toml:"DBDriver"`
+	// 路径
+	PathFile   string `toml:"filePath"`
+	PathPic    string `toml:"picturePath"`
+	StaticPath string `toml:"staticPath"`
+	// 服务器
 	ServerHost string `toml:"serverHost"`
 	ServerPort string `toml:"serverPort"`
-	StaticPath string `toml:"staticPath"`
-	LogCache   int 	  `toml:"logCache"`
-	LogInterval int   `toml:"logInterval"`
+	// 日志
+	LogCache    int `toml:"logCache"`
+	LogInterval int `toml:"logInterval"`
+	// redis
+	RedisHost     string `toml:"www.cjwddz.cn"`
+	RedisPort     string `toml:"6379"`
+	RedisPassword string `toml:"admin123"`
 }
 
 var App *tomlFile

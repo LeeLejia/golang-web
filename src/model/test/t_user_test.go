@@ -11,7 +11,7 @@ import (
 )
 
 func TestT_user(t *testing.T) {
-	conf.Init("/home/cjwddz/桌面/git-project/golang-web/src/app.toml")
+	conf.Init("/home/cjwddz/桌面/git-project/golang-web/src/task.toml")
 	md, err := m.GetUserModel()
 	if err != nil {
 		t.Fail()

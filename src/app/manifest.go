@@ -9,12 +9,14 @@ import (
 var AppModel model.DbModel
 var CodeModel model.DbModel
 var UserModel model.DbModel
-var FileModel model.DbModel
 var VlogModel model.DbModel
-var LogModel model.DbModel
+var FileModel model.DbModel
+
 
 func Init(){
-	model.InitDB(conf.App.DBHost, conf.App.DBPort, conf.App.DBUser, conf.App.DBPassword, conf.App.DBName, "postgres")
+	if !model.DbHasInit{
+		model.InitDB(conf.App.DBHost, conf.App.DBPort, conf.App.DBUser, conf.App.DBPassword, conf.App.DBName, conf.App.DBDriver)
+	}
 	app,err:= m.GetAppModel()
 	if err!=nil{
 		fmt.Println(err.Error())
@@ -40,15 +42,9 @@ func Init(){
 		fmt.Println(err.Error())
 		return
 	}
-	log,err:=m.GetLogModel()
-	if err!=nil{
-		fmt.Println(err.Error())
-		return
-	}
 	AppModel = app
 	CodeModel = code
 	UserModel = user
 	FileModel = file
 	VlogModel = vlog
-	LogModel = log
 }

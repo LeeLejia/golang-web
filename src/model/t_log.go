@@ -23,6 +23,7 @@ const(
 	LOG_TYPE_WARM="warn"
 	LOG_TYPE_ERROR="error"
 	LOG_TYPE_NORMAL="normal"
+	LOG_TYPE_NOTIFY="notify"
 )
 
 type T_log struct {
@@ -31,14 +32,15 @@ type T_log struct {
 	Tag       string    `json:"tag"`
 	Operator  string    `json:"operator"`
 	Content   string    `json:"content"`
+	Caller    string 	`json:"caller"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
 func GetLogModel() (m.DbModel, error){
 	sc:=m.SqlController {
 		TableName:      "t_log",
-		InsertColumns:  []string{"type","tag","operator","content","created_at"},
-		QueryColumns:   []string{"id","type","tag","operator","content","created_at"},
+		InsertColumns:  []string{"type","tag","operator","content","caller","created_at"},
+		QueryColumns:   []string{"id","type","tag","operator","content","caller","created_at"},
 		InSertFields:   insertLogFields,
 		QueryField2Obj: queryLogField2Obj,
 	}
@@ -47,7 +49,7 @@ func GetLogModel() (m.DbModel, error){
 func insertLogFields(obj interface{}) []interface{} {
 	log :=obj.(T_log)
 	return []interface{}{
-		log.Type, log.Tag, log.Operator, log.Content, log.CreatedAt,
+		log.Type, log.Tag, log.Operator, log.Content,log.Caller, log.CreatedAt,
 	}
 }
 func queryLogField2Obj(fields []interface{}) interface{} {
@@ -57,7 +59,8 @@ func queryLogField2Obj(fields []interface{}) interface{} {
 		Tag:m.GetString(fields[2]),
 		Operator:m.GetString(fields[3]),
 		Content:m.GetString(fields[4]),
-		CreatedAt:m.GetTime(fields[5],time.Now()),
+		Caller:m.GetString(fields[5]),
+		CreatedAt:m.GetTime(fields[6],time.Now()),
 	}
 	return log
 }

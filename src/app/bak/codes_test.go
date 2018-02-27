@@ -1,12 +1,12 @@
-package app
+package bak
 
 import (
 	"testing"
-	"../common"
+	"../../common"
 	"github.com/bitly/go-simplejson"
 	"fmt"
 	"net/url"
-	"../model"
+	"../../model"
 )
 
 func TestAddCode(t *testing.T) {

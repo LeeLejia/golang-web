@@ -12,8 +12,6 @@ import (
 	"strings"
 )
 
-
-
 func main() {
 	// 初始化配置文件
 	conf.Init("./app.toml")
@@ -28,20 +26,20 @@ func main() {
 }
 
 func BeginServer(){
-	/**注册模板*/
-	//IniTemplate()
+	InitTemplate()
 	/**注册路由*/
 	routers:=[]common.BH{
-		{Url:"/api/login",Check:false,Handle:app.Login},
-		{Url:"/api/logout",Check:false,Handle:app.Logout},
-		{Url:"/api/register",Check:false,Handle:app.Register},
-		{Url:"/api/developer/add-app",Check:true,Handle2:app.AddApp},
-		{Url:"/api/developer/list-apps",Check:true,Handle2:app.ListApps},
-		{Url:"/api/developer/add-code",Check:true,Handle2:app.AddCode},
-		{Url:"/api/developer/list-codes",Check:true,Handle2:app.ListCodes},
-		{Url:"/api/upload-picture",Check:false,Handle2:app.UploadPicture},
-		{Url:"/api/upload-file",Check:false,Handle2:app.UploadFile},
-		{Url:"/api/list-file",Check:true,Handle2:app.ListFiles},
+		//{Url:"/api/login",Check:false,Handle:app.Login},
+		//{Url:"/api/logout",Check:false,Handle:app.Logout},
+		//{Url:"/api/register",Check:false,Handle:app.Register},
+		//{Url:"/api/developer/add-app",Check:true,Handle2:app.AddApp},
+		//{Url:"/api/developer/list-apps",Check:true,Handle2:app.ListApps},
+		//{Url:"/api/developer/add-code",Check:true,Handle2:app.AddCode},
+		//{Url:"/api/developer/list-codes",Check:true,Handle2:app.ListCodes},
+		{Url:"/api/checkSha256",Check:false,Handle:app.CheckSha256},
+		{Url:"/api/uploadPicture",Check:false,Handle2:app.UploadPictrue},
+		{Url:"/api/uploadFile",Check:false,Handle2:app.UploadFile},
+		//{Url:"/api/list-file",Check:true,Handle2:app.ListFiles},
 	}
 	common.SetRouters(routers)
 	http.Handle("/",http.FileServer(http.Dir(conf.App.StaticPath)))
@@ -51,32 +49,16 @@ func BeginServer(){
 		fmt.Println("服务退出！"+err.Error())
 	}
 }
-
-/**
-初始化模板
- */
-func IniTemplate(){
-	/*从静态目录中加载并设置模板*/
-	fmt.Println(fmt.Sprintf("初始化模板,%s",conf.App.StaticPath))
-	files, err := ioutil.ReadDir(conf.App.StaticPath)
-	if err != nil {
-		fmt.Println("初始化模板失败！detail："+err.Error())
-		return
+/** 初始化模板*/
+func InitTemplate(){
+	/**获取模板,设置页面*/
+	index,err:=getTemplate()
+	if err!=nil{
+		fmt.Println(fmt.Sprintf("设置模板出错!原因：%s",err.Error()))
 	}
-	var htmlFiles []string
-	for _, file := range files {
-		fileName := file.Name()
-		if strings.HasSuffix(fileName, ".html") {
-			htmlFiles = append(htmlFiles, conf.App.StaticPath+"/"+fileName)
-			fmt.Println(fmt.Sprintf("---添加模板,%s",conf.App.StaticPath+"/"+fileName))
-		}
-	}
-	templates:=template.Must(template.ParseFiles(htmlFiles...))
-	/*设置前端入口模板*/
-	index:=templates.Lookup("index.html")
 	handler:=func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "text/html;charset=utf-8")
-		if request.Method == "GET" {
+		if request.Method == "GET" && err!=nil{
 			index.Execute(writer, nil)
 			return
 		}
@@ -85,4 +67,44 @@ func IniTemplate(){
 	http.HandleFunc("/developer", handler)
 	http.HandleFunc("/admin", handler)
 	http.HandleFunc("/payment", handler)
+	// 更新模板文件
+	http.HandleFunc("/resetTemplate", func(writer http.ResponseWriter, request *http.Request) {
+		index,err=getTemplate()
+		if err!=nil{
+			rs:=fmt.Sprintf("设置模板出错!原因：%s",err.Error())
+			fmt.Println(rs)
+			writer.Write([]byte(rs))
+			return
+		}
+		rs:=fmt.Sprintf("更新成功，入口模板为%s",index.Name())
+		fmt.Println(rs)
+		writer.Write([]byte(rs))
+		return
+	})
+}
+/**
+	获取模板入口
+ */
+func getTemplate() (*template.Template,error){
+	/*从静态目录中加载并设置模板*/
+	fmt.Println(fmt.Sprintf("从[%s]中加载模板..",conf.App.StaticPath))
+	files, err := ioutil.ReadDir(conf.App.StaticPath)
+	if err != nil {
+		return nil,err
+	}
+	var htmlFiles []string
+	for _, file := range files {
+		fileName := file.Name()
+		if strings.HasSuffix(fileName, ".html") {
+			htmlFiles = append(htmlFiles, conf.App.StaticPath+"/"+fileName)
+			fmt.Println(fmt.Sprintf("添加模板:%s",fileName))
+		}
+	}
+	if len(htmlFiles)==0{
+		return nil,fmt.Errorf("在%s中找不到模板文件.",conf.App.StaticPath)
+	}
+	templates:=template.Must(template.ParseFiles(htmlFiles...))
+	/*设置前端入口模板*/
+	index:=templates.Lookup("index.html")
+	return index,nil
 }

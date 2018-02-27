@@ -10,7 +10,7 @@ import (
 
 func TestD(t *testing.T) {
 	common.InitDb(t)
-	conf.Init("/home/cjwddz/桌面/git-project/golang-web/src/app.toml")
+	conf.Init("/home/cjwddz/桌面/git-project/golang-web/src/task.toml")
 	fmt.Println(fmt.Sprintf("cache:%d,logInterval:%d",cache,logInterval))
 	Init()
 	for i:=0;i<50;i++{

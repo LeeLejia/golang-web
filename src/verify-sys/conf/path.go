@@ -20,7 +20,7 @@ func AppPath(appPath ...string) string {
 
 	if _appPath == "" {
 		_appPath, _ = filepath.Abs(filepath.Dir(os.Args[0]))
-		if !fileExists(filepath.Join(_appPath, "conf", "app.toml")) {
+		if !fileExists(filepath.Join(_appPath, "conf", "task.toml")) {
 			workPath, _ := os.Getwd()
 			workPath, _ = filepath.Abs(workPath)
 			_appPath = workPath

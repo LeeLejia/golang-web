@@ -10,23 +10,22 @@ import (
 )
 
 // 项目根目录
-var _appPath string
+var AppRootPath string
 
 // AppPath 项目根目录
 func AppPath(appPath ...string) string {
 	if len(appPath) > 0 {
-		_appPath = appPath[0]
+		AppRootPath = appPath[0]
 	}
-
-	if _appPath == "" {
-		_appPath, _ = filepath.Abs(filepath.Dir(os.Args[0]))
-		if !fileExists(filepath.Join(_appPath, "conf", "app.toml")) {
+	if AppRootPath == "" {
+		AppRootPath, _ = filepath.Abs(filepath.Dir(os.Args[0]))
+		if !fileExists(filepath.Join(AppRootPath, "conf", "task.toml")) {
 			workPath, _ := os.Getwd()
 			workPath, _ = filepath.Abs(workPath)
-			_appPath = workPath
+			AppRootPath = workPath
 		}
 	}
-	return _appPath
+	return AppRootPath
 }
 
 // RealFilePath 返回绝对路径

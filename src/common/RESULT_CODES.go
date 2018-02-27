@@ -2,6 +2,10 @@ package common
 
 
 const(
+	// 操作成功
+	CODE_SUCCESS = 200
+	CODE_OK = 200
+
 	// 请求参数错误
 	CODE_PARAMS_INVALID=500
 	// 系统错误
@@ -10,10 +14,12 @@ const(
 	CODE_VERIFY_FAIL=404
 	// SESSION登录超时
 	CODE_NOT_ALLOW = 406
-	//需要重新登录
+	// 需要重新登录
 	CODE_NEET_LOGIN_AGAIN = 1024
-	//角色不符合
+	// 角色不符合
 	CODE_ROLE_INVADE = 512
-	//数据库读写错误
+	// 数据库读写错误
 	CODE_DB_RW_ERR = 128
+
+
 )

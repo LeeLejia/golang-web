@@ -1,9 +1,10 @@
-package app
+package bak
 
 import (
 	"net/http"
-	"../common"
-	"../model"
+	"../../common"
+	fm "github.com/cjwddz/fast-model"
+	"../../model"
 	"fmt"
 	"time"
 	"github.com/bitly/go-simplejson"
@@ -62,7 +63,7 @@ func AddApp(w http.ResponseWriter, r *http.Request, user *model.T_user) {
 		common.ReturnEFormat(w,common.CODE_DB_RW_ERR, "数据库插入错误")
 		return
 	}
-	common.ReturnFormat(w,200,nil,"操作成功")
+	common.ReturnFormat(w,common.CODE_OK,map[string]interface{}{"msg":"操作成功！"})
 }
 
 /**
@@ -81,17 +82,17 @@ func ListApps(w http.ResponseWriter, r *http.Request, user *model.T_user){
 		c++
 
 	}
-	cdt:=&model.DbCondition{}
+	cdt:=fm.DbCondition{}
 	if user.Role==model.USER_ROLE_DEVELOPER{
-		cdt=cdt.And2("=","developer",user.Id)
+		cdt=cdt.And("=","developer",user.Id)
 	}
-	cdt=cdt.And(r,"=","b_valid").And(r,"like","s_name")
-	cdt=cdt.Order(r.PostFormValue("order")).Limit(r,"start","len")
-	apps,err:= AppModel.Query(cdt.GetWhere())
+	cdt=cdt.And2(r,"=","b_valid").And2(r,"like","s_name")
+	cdt=cdt.Order(r.PostFormValue("order")).Limit2(r,"start","len")
+	apps,err:= AppModel.Query(cdt)
 	if err!=nil{
 		fmt.Println(err.Error())
 	}
-	common.ReturnFormat(w, 200, apps, "success")
+	common.ReturnFormat(w, common.CODE_OK, map[string]interface{}{"apps":apps,"msg":"操作成功！"})
 }
 
 /**

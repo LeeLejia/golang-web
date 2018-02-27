@@ -10,7 +10,7 @@ import (
 )
 
 func TestT_file(t *testing.T) {
-	conf.Init("/home/cjwddz/桌面/git-project/golang-web/src/app.toml")
+	conf.Init("/home/cjwddz/桌面/git-project/golang-web/src/task.toml")
 	md, err := m.GetFileModel()
 	if err != nil {
 		t.Fail()

@@ -4,43 +4,73 @@ import (
 	"../model"
 	"net/http"
 	"../common"
-	"fmt"
-	"strings"
 	"../common/conf"
-	"path"
+	"../common/log"
 	"os"
 	"io"
+	fm "github.com/cjwddz/fast-model"
 	"time"
+	"strings"
+	"path"
+	"fmt"
 )
 
 /**
 获取文件
 只有管理员和超级管理员可以获取文件列表
 其他成员只能下载单个文件
-todo
  */
 func ListFiles(w http.ResponseWriter, r *http.Request, user *model.T_user){
 	if user.Role!=model.USER_ROLE_SUPER && user.Role!=model.USER_ROLE_ADMIN{
 		common.ReturnEFormat(w, common.CODE_ROLE_INVADE,"你没有获取文件列表权限！")
 		return
 	}
-	cond:=""
-	apps,err:= model.FindFiles(cond,"","")
-	if err!=nil{
-		fmt.Println(err.Error())
-		common.ReturnFormat(w, common.CODE_SERVICE_ERR, apps, err.Error())
-		return
-	}
-	common.ReturnFormat(w, 200, apps, "success")
 }
 
 /**
-上传文件
+检查sha256,判断文件是否存在
  */
-func UploadFile(w http.ResponseWriter, r *http.Request, user *model.T_user){
+func CheckSha256(w http.ResponseWriter, r *http.Request){
+	r.ParseForm()
+	// 获取sha256
+	sha256:=r.Form.Get("sha256")
+	if sha256==""{
+		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"参数缺少sha256！")
+		return
+	}else if len(sha256)!=64{
+		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"sha256不合法！")
+		return
+	}
+	// 判断文件是否存在
+	rs,err:=FileModel.Query(fm.DbCondition{}.And("=","key",sha256).Limit(1,-1))
+	if err!=nil || rs==nil || len(rs)==0{
+		common.ReturnFormat(w,common.CODE_SUCCESS,map[string]interface{}{"exist":false,"msg":"文件不存在！"})
+		return
+	}
+	common.ReturnFormat(w,common.CODE_SUCCESS,map[string]interface{}{"exist":true,"sha256":sha256})
+	return
+}
+
+/**
+	上传小文件
+ */
+func UploadFile(w http.ResponseWriter, r *http.Request, user *model.T_user) {
 	f, h, err := r.FormFile("file")
+	if err != nil {
+		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"请提交文件")
+		return
+	}
 	defer f.Close()
-	fileKey := common.GetRandomString(16)
+	fileKey := r.FormValue("sha256")
+	if len(fileKey)!=64{
+		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"文件指纹缺失！")
+		return
+	}
+	fileType:=r.FormValue("type")
+	if fileType==""{
+		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"未指定文件类型！")
+		return
+	}
 	filePath := conf.App.PathFile +"/"+ fileKey
 	t, err := os.Create(filePath)
 	if err != nil {
@@ -53,37 +83,42 @@ func UploadFile(w http.ResponseWriter, r *http.Request, user *model.T_user){
 		return
 	}
 	file:=model.T_File{
-		FileKey:fileKey,
-		FileName:h.Filename,
-		FileType:model.FILE_TYPE_FILE,
-		Owner:user.Id,
+		Key:fileKey,
+		Type:fileType,
+		Name:h.Filename,
+		Owner:user.Account,
 		CreatedAt:time.Now(),
 	}
-	err=file.Insert()
+	err=FileModel.Insert(file)
 	if err!=nil{
-		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, err.Error())
+		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, "数据库写入失败！")
 		return
 	}
-	common.ReturnFormat(w, 200, map[string]interface{}{"key": fileKey}, "success")
+	common.ReturnFormat(w, common.CODE_OK, map[string]interface{}{"key": fileKey,"msg":"success"})
 }
 /**
 上传图片
  */
-func UploadPicture(w http.ResponseWriter, r *http.Request, user *model.T_user) {
-	f, h, err := r.FormFile("file")
+func UploadPictrue(w http.ResponseWriter, r *http.Request, user *model.T_user){
+	f, h, err := r.FormFile("img")
 	if err != nil {
-		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"请提交图片")
-		return
-	}
-	filename := h.Filename
-	fileSuffix := strings.ToLower(path.Ext(filename))
-	if fileSuffix != ".jpg" && fileSuffix != ".png" && fileSuffix!=".gif"{
-		common.ReturnEFormat(w, 500, fmt.Sprintf("不支持的图片格式'%s'", fileSuffix))
+		log.W("UploadPictrue",user.Account,err.Error())
+		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"请提交文件")
 		return
 	}
 	defer f.Close()
-	fileKey := common.GetRandomString(16)
-	filePath := conf.App.PathPic +"/"+ fileKey
+	filename := h.Filename
+	fileSuffix := strings.ToLower(path.Ext(filename))
+	if fileSuffix != ".jpg" && fileSuffix != ".png" && fileSuffix!=".gif" && fileSuffix!=".jpeg"{
+		common.ReturnEFormat(w, 500, fmt.Sprintf("不支持的图片格式'%s'", fileSuffix))
+		return
+	}
+	fileKey := r.FormValue("sha256")
+	if len(fileKey)!=64{
+		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"文件指纹缺失！")
+		return
+	}
+	filePath := conf.App.PathFile +"/"+ fileKey
 	t, err := os.Create(filePath)
 	if err != nil {
 		common.ReturnEFormat(w, common.CODE_SERVICE_ERR, "内部服务出错！")
@@ -95,17 +130,17 @@ func UploadPicture(w http.ResponseWriter, r *http.Request, user *model.T_user) {
 		return
 	}
 	file:=model.T_File{
-		FileKey:fileKey,
-		FileType:model.FILE_TYPE_PIC,
-		FileName:h.Filename,
-		Owner:user.Id,
+		Key:fileKey,
+		Type:"picture-normal",
+		Name:h.Filename,
+		Owner:user.Account,
 		CreatedAt:time.Now(),
 	}
-	err=file.Insert()
+	err=FileModel.Insert(file)
 	if err!=nil{
-		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, err.Error())
+		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, "数据库写入失败！")
 		return
 	}
-	common.ReturnFormat(w, 200, map[string]interface{}{"key": fileKey}, "success")
+	common.ReturnFormat(w, common.CODE_OK, map[string]interface{}{"key": fileKey,"msg":"success"})
 }
 

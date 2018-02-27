@@ -16,28 +16,26 @@ import (
 
 type R struct {
 	Code int         `json:"code"`
-	Msg  string      `json:"msg"`
-	Data interface{} `json:"data"`
+	Data map[string]interface{} `json:"data"`
 }
 type RE struct {
 	Code int    `json:"code"`
 	Msg  string `json:"msg"`
 }
-
-func ReturnFormat(w http.ResponseWriter, code int, data interface{}, msg string) {
+/**
+api回应
+ */
+func ReturnFormat(w http.ResponseWriter, code int, data map[string]interface{}) {
 	SetContent(w)
 	if data!=nil{
-		res := R{Code: code, Data: data, Msg: msg}
-		omg, _ := json.Marshal(res)
-		w.Write(omg)
-	}else{
-		res := RE{Code: code, Msg: msg}
+		res := R{Code: code, Data: data}
 		omg, _ := json.Marshal(res)
 		w.Write(omg)
 	}
-
 }
-
+/**
+打印错误
+ */
 func ReturnEFormat(w http.ResponseWriter, code int, msg string) {
 	SetContent(w)
 	res := RE{Code: code, Msg: msg}
