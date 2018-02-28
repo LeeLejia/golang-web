@@ -1,11 +1,11 @@
 # 后台环境设置 dev-测试环境（不发送短信及邮件） normal-正式环境
 appEnv = "normal"
 # 数据库
-DBHost = "xxx"
+DBHost = "www.xxxx.cn"
 DBPort = "5432"
 DBUser = "postgres"
-DBPassword = "xxx"
-DBName = "xxx"
+DBPassword = "xxxx"
+DBName = "my-site"
 DBNameTest = "my-site-test"
 DBDriver = "postgres"
 
@@ -22,6 +22,6 @@ serverHost="http://localhost"
 serverPort="80"
 
 # redis
-RedisHost = "xxx"
+RedisHost = "www.xxxx.cn"
 RedisPort = "6379"
 RedisPassword = "xxx"
