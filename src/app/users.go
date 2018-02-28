@@ -12,6 +12,7 @@ import (
 登录
  */
 func Login(_ *common.Session, w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
 	account := r.PostFormValue("account")
 	pwd := r.PostFormValue("pwd")
 	osType := r.PostFormValue("osType")

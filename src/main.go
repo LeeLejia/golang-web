@@ -37,9 +37,9 @@ func BeginServer(){
 		{Url:"/api/checkSha256",Check:false,Handle:app.CheckSha256},
 		{Url:"/api/uploadPicture",Check:true,Handle:app.UploadPicture},
 		{Url:"/api/uploadFile",Check:true,Handle:app.UploadFile},
-
-		//{Url:"/api/developer/add-app",Check:true,Handle2:app.AddApp},
-		//{Url:"/api/developer/list-apps",Check:true,Handle2:app.ListApps},
+		// App添加/删除/列表获取
+		{Url:"/api/developer/add-app",Check:true,Handle:app.AddApp},
+		{Url:"/api/developer/list-apps",Check:true,Handle:app.ListApps},
 		//{Url:"/api/developer/add-code",Check:true,Handle2:app.AddCode},
 		//{Url:"/api/developer/list-codes",Check:true,Handle2:app.ListCodes},
 	}

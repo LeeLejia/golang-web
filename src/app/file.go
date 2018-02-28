@@ -106,7 +106,7 @@ func UploadFile(sess *common.Session, w http.ResponseWriter, r *http.Request) {
 func UploadPicture(sess *common.Session, w http.ResponseWriter, r *http.Request){
 	f, h, err := r.FormFile("img")
 	if err != nil {
-		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"请提交文件")
+		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"请提交图片")
 		return
 	}
 	defer f.Close()
