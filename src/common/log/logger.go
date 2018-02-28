@@ -57,7 +57,7 @@ func Init() {
 func D(tag string,operator string,msg ...interface{}) {
 	var content=(msg[0]).(string)
 	if len(msg)>1{
-		content=fmt.Sprintf(msg[0].(string),msg[1:])
+		content=fmt.Sprintf(msg[0].(string),msg[1:]...)
 	}
 	if FMT_OUT{
 		fmt.Println(fmt.Sprintf("D[tag:%s,operator:%s,time:%s]>>%s",tag,operator,time.Now().Format("2006/01/02 15:04:05"),content))
@@ -70,7 +70,7 @@ func D(tag string,operator string,msg ...interface{}) {
 func W(tag string,operator string,msg ...interface{}) {
 	var content=(msg[0]).(string)
 	if len(msg)>1{
-		content=fmt.Sprintf(msg[0].(string),msg[1:])
+		content=fmt.Sprintf(msg[0].(string),msg[1:]...)
 	}
 	if FMT_OUT{
 		fmt.Println(fmt.Sprintf("W[tag:%s,operator:%s,time:%s]>>%s",tag,operator,time.Now().Format("2006/01/02 15:04:05"),content))
@@ -96,7 +96,7 @@ func I(tag string,operator string,msg ...interface{}) {
 func E(tag string,operator string,msg ...interface{}) {
 	var content=(msg[0]).(string)
 	if len(msg)>1{
-		content=fmt.Sprintf(msg[0].(string),msg[1:])
+		content=fmt.Sprintf(msg[0].(string),msg[1:]...)
 	}
 	if FMT_OUT {
 		fmt.Println(Red(fmt.Sprintf("E[tag:%s operator:%s %s] %s", tag, operator, time.Now().Format("2006/01/02 15:04:05"), content)))
@@ -109,7 +109,7 @@ func E(tag string,operator string,msg ...interface{}) {
 func N(tag string,operator string,msg ...interface{}) {
 	var content=(msg[0]).(string)
 	if len(msg)>1{
-		content=fmt.Sprintf(msg[0].(string),msg[1:])
+		content=fmt.Sprintf(msg[0].(string),msg[1:]...)
 	}
 	if FMT_OUT {
 		fmt.Println(Green(fmt.Sprintf("N[tag:%s,operator:%s,time:%s]>>%s", tag, operator, time.Now().Format("2006/01/02 15:04:05"), content)))
@@ -122,7 +122,7 @@ func N(tag string,operator string,msg ...interface{}) {
 func Notify(tag string,operator string,msg ...interface{}){
 	var content=(msg[0]).(string)
 	if len(msg)>1{
-		content=fmt.Sprintf(msg[0].(string),msg[1:])
+		content=fmt.Sprintf(msg[0].(string),msg[1:]...)
 	}
 	if FMT_OUT {
 		fmt.Println(Magenta(fmt.Sprintf("Notify[tag:%s,operator:%s,time:%s]>>%s", tag, operator, time.Now().Format("2006/01/02 15:04:05"), content)))
@@ -138,6 +138,9 @@ func insertSystemLogs(logType,tag, operator, content string) {
 	if !CONF_WRITE_TO_DB{
 		return
 	}
+	if operator==""{
+		operator = "unKnown"
+	}
 	_,f,l,_:=runtime.Caller(2)
 	cl:=fmt.Sprintf("%s line:%d",strings.TrimPrefix(f,conf.AppRootPath),l)
 	tl := model.T_log{
@@ -146,6 +149,7 @@ func insertSystemLogs(logType,tag, operator, content string) {
 		Caller:cl,
 		Operator:operator,
 		Content:content,
+		CreatedAt:time.Now(),
 	}
 	logs[count]=tl
 	count++

@@ -20,8 +20,8 @@ import (
 只有管理员和超级管理员可以获取文件列表
 其他成员只能下载单个文件
  */
-func ListFiles(w http.ResponseWriter, r *http.Request, user *model.T_user){
-	if user.Role!=model.USER_ROLE_SUPER && user.Role!=model.USER_ROLE_ADMIN{
+func ListFiles(ssesion * common.Session,w http.ResponseWriter, r *http.Request){
+	if ssesion.User.Role!=model.USER_ROLE_SUPER && ssesion.User.Role!=model.USER_ROLE_ADMIN{
 		common.ReturnEFormat(w, common.CODE_ROLE_INVADE,"你没有获取文件列表权限！")
 		return
 	}
@@ -30,7 +30,7 @@ func ListFiles(w http.ResponseWriter, r *http.Request, user *model.T_user){
 /**
 检查sha256,判断文件是否存在
  */
-func CheckSha256(w http.ResponseWriter, r *http.Request){
+func CheckSha256(_ *common.Session, w http.ResponseWriter, r *http.Request){
 	r.ParseForm()
 	// 获取sha256
 	sha256:=r.Form.Get("sha256")
@@ -54,7 +54,7 @@ func CheckSha256(w http.ResponseWriter, r *http.Request){
 /**
 	上传小文件
  */
-func UploadFile(w http.ResponseWriter, r *http.Request, user *model.T_user) {
+func UploadFile(sess *common.Session, w http.ResponseWriter, r *http.Request) {
 	f, h, err := r.FormFile("file")
 	if err != nil {
 		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"请提交文件")
@@ -75,34 +75,37 @@ func UploadFile(w http.ResponseWriter, r *http.Request, user *model.T_user) {
 	t, err := os.Create(filePath)
 	if err != nil {
 		common.ReturnEFormat(w, common.CODE_SERVICE_ERR, "内部服务出错！")
+		log.E("UploadFile出错",sess.User.Account,err.Error())
 		return
 	}
 	defer t.Close()
 	if _, err := io.Copy(t, f); err != nil {
 		common.ReturnEFormat(w, common.CODE_SERVICE_ERR, "内部服务出错！")
+		log.E("UploadFile出错",sess.User.Account,err.Error())
 		return
 	}
 	file:=model.T_File{
 		Key:fileKey,
 		Type:fileType,
 		Name:h.Filename,
-		Owner:user.Account,
+		Owner:sess.User.Account,
 		CreatedAt:time.Now(),
 	}
 	err=FileModel.Insert(file)
 	if err!=nil{
+		log.E("UploadFile出错",sess.User.Account,err.Error())
 		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, "数据库写入失败！")
 		return
 	}
 	common.ReturnFormat(w, common.CODE_OK, map[string]interface{}{"key": fileKey,"msg":"success"})
+	log.N("UploadFile上传文件成功",sess.User.Account,h.Filename)
 }
 /**
 上传图片
  */
-func UploadPictrue(w http.ResponseWriter, r *http.Request, user *model.T_user){
+func UploadPicture(sess *common.Session, w http.ResponseWriter, r *http.Request){
 	f, h, err := r.FormFile("img")
 	if err != nil {
-		log.W("UploadPictrue",user.Account,err.Error())
 		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"请提交文件")
 		return
 	}
@@ -122,25 +125,29 @@ func UploadPictrue(w http.ResponseWriter, r *http.Request, user *model.T_user){
 	t, err := os.Create(filePath)
 	if err != nil {
 		common.ReturnEFormat(w, common.CODE_SERVICE_ERR, "内部服务出错！")
+		log.E("UploadPicture出错",sess.User.Account,err.Error())
 		return
 	}
 	defer t.Close()
 	if _, err := io.Copy(t, f); err != nil {
 		common.ReturnEFormat(w, common.CODE_SERVICE_ERR, "内部服务出错！")
+		log.E("UploadPicture出错",sess.User.Account,err.Error())
 		return
 	}
 	file:=model.T_File{
 		Key:fileKey,
 		Type:"picture-normal",
 		Name:h.Filename,
-		Owner:user.Account,
+		Owner:sess.User.Account,
 		CreatedAt:time.Now(),
 	}
 	err=FileModel.Insert(file)
 	if err!=nil{
 		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, "数据库写入失败！")
+		log.E("UploadPicture出错",sess.User.Account,err.Error())
 		return
 	}
 	common.ReturnFormat(w, common.CODE_OK, map[string]interface{}{"key": fileKey,"msg":"success"})
+	log.N("UploadPicture上传图片成功",sess.User.Account,h.Filename)
 }
 

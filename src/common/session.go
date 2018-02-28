@@ -1,6 +1,3 @@
-/**
- * 系统用户登录验证模块
- */
 package common
 
 import (
@@ -11,6 +8,7 @@ import (
 	"strconv"
 	"../model"
 	"time"
+	"sync"
 )
 
 type Session struct {
@@ -19,12 +17,12 @@ type Session struct {
 	Time   time.Time
 }
 const TOKEN_TIME_OUT = 100
-var UserSessions map[string]*Session
+var UserSessions = sync.Map{}
 /**
 获取Session键
  */
-func GetSessionID(phone, email, osType, role string) string {
-	raw:=fmt.Sprintf("%s-%s-%s-%s", phone, email, osType, role)
+func GetSessionID(account, osType, role string) string {
+	raw:=fmt.Sprintf("%s-%s-%s", account, osType, role)
 	h := md5.New()
 	io.WriteString(h,raw)
 	return fmt.Sprintf("%X", h.Sum(nil))
@@ -49,17 +47,13 @@ func (sess *Session)RefreshTime(){
 /**
 保存session
  */
-func SaveSession(user model.T_user, osType string) (sessionKey string,session *Session) {
-	/*session懒创建*/
-	if UserSessions == nil {
-		UserSessions = map[string]*Session{}
-	}
-	sessionKey = GetSessionID(user.Phone,user.Email,osType, user.Role)
-	session = new(Session)
-	session.User = user
-	session.GetToken()
-	UserSessions[sessionKey] = session
-	session.RefreshTime()
+func SaveSession(user model.T_user, osType string) (sessionKey string, sess *Session) {
+	sessionKey = GetSessionID(user.Account,osType, user.Role)
+	sess = new(Session)
+	sess.User = user
+	sess.GetToken()
+	UserSessions.Store(sessionKey,sess)
+	sess.RefreshTime()
 	return
 }
 /**
@@ -67,7 +61,7 @@ func SaveSession(user model.T_user, osType string) (sessionKey string,session *S
  */
 func RemoveSession(r *http.Request) {
 	sessionId := r.FormValue("sessionId")
-	delete(UserSessions,sessionId)
+	UserSessions.Delete(sessionId)
 }
 /**
 检测session合法性
@@ -93,22 +87,23 @@ func CheckSession(w http.ResponseWriter,r *http.Request) (err error) {
 		sessionId = r.PostFormValue("sessionId")
 		token = r.PostFormValue("token")
 	}
-	session:=UserSessions[sessionId]
-	if session==nil{
+	session,ok:=UserSessions.Load(sessionId)
+	if !ok || session==nil{
 		err = fmt.Errorf("用户session校验失败，session不存在！")
 		return
 	}
-	if session.Token!=token{
+	sess:= session.(*Session)
+	if sess.Token!=token{
 		err = fmt.Errorf("用户session校验失败，token不匹配，请重新登录！")
 		return
 	}
-	during:=time.Now().Unix()-session.Time.Unix()
+	during:=time.Now().Unix()-sess.Time.Unix()
 	if during>TOKEN_TIME_OUT{
 		err = fmt.Errorf("用户session校验失败，登录超时，请重新登录！")
 		return
 	}
 	// 更新登录时间
-	session.RefreshTime()
+	sess.RefreshTime()
 	http.SetCookie(w,&http.Cookie{Name:"sessionId",Value:sessionId,Path:"/"})
 	http.SetCookie(w,&http.Cookie{Name:"token",Value:token,Path:"/"})
 	return nil

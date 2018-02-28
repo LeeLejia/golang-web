@@ -21,5 +21,7 @@ const(
 	// 数据库读写错误
 	CODE_DB_RW_ERR = 128
 
+	//注册-帐号已经存在
+	REGISTER_ACCOUNT_EXIST = 1003
 
 )

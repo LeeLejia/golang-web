@@ -12,6 +12,7 @@ CREATE TABLE t_log (
 "tag" varchar(256) COLLATE "default",
 "operator" varchar(128) COLLATE "default",
 "content" varchar(512) COLLATE "default",
+"caller" varchar(512) COLLATE "default",
 "created_at" timestamp(6) DEFAULT CURRENT_TIMESTAMP
 )
 WITH (OIDS=FALSE);

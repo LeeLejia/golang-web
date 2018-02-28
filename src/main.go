@@ -29,17 +29,19 @@ func BeginServer(){
 	InitTemplate()
 	/**注册路由*/
 	routers:=[]common.BH{
-		//{Url:"/api/login",Check:false,Handle:app.Login},
-		//{Url:"/api/logout",Check:false,Handle:app.Logout},
-		//{Url:"/api/register",Check:false,Handle:app.Register},
+		// 用户登录/注销/注册
+		{Url:"/api/login",Check:false,Handle:app.Login},
+		{Url:"/api/logout",Check:true,Handle:app.Logout},
+		{Url:"/api/register",Check:false,Handle:app.Register},
+		// 文件校验/上传图片/上传文件
+		{Url:"/api/checkSha256",Check:false,Handle:app.CheckSha256},
+		{Url:"/api/uploadPicture",Check:true,Handle:app.UploadPicture},
+		{Url:"/api/uploadFile",Check:true,Handle:app.UploadFile},
+
 		//{Url:"/api/developer/add-app",Check:true,Handle2:app.AddApp},
 		//{Url:"/api/developer/list-apps",Check:true,Handle2:app.ListApps},
 		//{Url:"/api/developer/add-code",Check:true,Handle2:app.AddCode},
 		//{Url:"/api/developer/list-codes",Check:true,Handle2:app.ListCodes},
-		{Url:"/api/checkSha256",Check:false,Handle:app.CheckSha256},
-		{Url:"/api/uploadPicture",Check:false,Handle2:app.UploadPictrue},
-		{Url:"/api/uploadFile",Check:false,Handle2:app.UploadFile},
-		//{Url:"/api/list-file",Check:true,Handle2:app.ListFiles},
 	}
 	common.SetRouters(routers)
 	http.Handle("/",http.FileServer(http.Dir(conf.App.StaticPath)))
@@ -58,15 +60,13 @@ func InitTemplate(){
 	}
 	handler:=func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "text/html;charset=utf-8")
-		if request.Method == "GET" && err!=nil{
+		if request.Method == "GET" && err==nil{
 			index.Execute(writer, nil)
 			return
 		}
 		http.Redirect(writer,request,"/",http.StatusFound)
 	}
-	http.HandleFunc("/developer", handler)
-	http.HandleFunc("/admin", handler)
-	http.HandleFunc("/payment", handler)
+	http.HandleFunc("/fangtan", handler)
 	// 更新模板文件
 	http.HandleFunc("/resetTemplate", func(writer http.ResponseWriter, request *http.Request) {
 		index,err=getTemplate()

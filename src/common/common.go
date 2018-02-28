@@ -26,7 +26,6 @@ type RE struct {
 api回应
  */
 func ReturnFormat(w http.ResponseWriter, code int, data map[string]interface{}) {
-	SetContent(w)
 	if data!=nil{
 		res := R{Code: code, Data: data}
 		omg, _ := json.Marshal(res)
@@ -37,7 +36,6 @@ func ReturnFormat(w http.ResponseWriter, code int, data map[string]interface{}) 
 打印错误
  */
 func ReturnEFormat(w http.ResponseWriter, code int, msg string) {
-	SetContent(w)
 	res := RE{Code: code, Msg: msg}
 	omg, _ := json.Marshal(res)
 	//w.WriteHeader(code)
