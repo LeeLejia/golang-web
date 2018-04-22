@@ -1,0 +1,22 @@
+# 数据库设置
+DBHost = "www.cjwddz.cn"
+DBPort = "5432"
+DBUser = "postgres"
+DBDriver = "postgres"
+DBPassword = "imjia123"
+DBName = "my-site"
+
+# 邮箱设置
+EmailAccount = "cjwddz"
+EmailPassword = "zilijeuvookubaha"
+EmailAddress = "smtp.qq.com:587"
+EmailHost = "smtp.qq.com"
+EmailFrom = "任务采集 <cjwddz@qq.com>"
+EmailTolist = "cjwddz@qq.com,1335158820@qq.com"
+
+# 任务过滤
+MinMoney = 300
+KeyWords = "app,微信,weixin,模拟,逆向"
+MoreThanMoney = 2000
+# 检测周期/秒
+Duration = 9

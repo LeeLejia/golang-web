@@ -42,6 +42,7 @@ func BeginServer(){
 		{Url:"/api/developer/list-apps",Check:true,Handle:app.ListApps},
 		//{Url:"/api/developer/add-code",Check:true,Handle2:app.AddCode},
 		//{Url:"/api/developer/list-codes",Check:true,Handle2:app.ListCodes},
+		{Url:"/api/upload-md",Check:true,Handle:app.UploadMarkdown},
 	}
 	common.SetRouters(routers)
 	http.Handle("/",http.FileServer(http.Dir(conf.App.StaticPath)))

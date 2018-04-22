@@ -7,7 +7,7 @@ import (
 	"./conf"
 	"./tcp"
 	"net"
-	"../model"
+	"../src/model"
 	"github.com/bitly/go-simplejson"
 	"time"
 	"encoding/json"

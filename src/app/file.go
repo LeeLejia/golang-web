@@ -100,6 +100,7 @@ func UploadFile(sess *common.Session, w http.ResponseWriter, r *http.Request) {
 	common.ReturnFormat(w, common.CODE_OK, map[string]interface{}{"key": fileKey,"msg":"success"})
 	log.N("UploadFile上传文件成功",sess.User.Account,h.Filename)
 }
+
 /**
 上传图片
  */

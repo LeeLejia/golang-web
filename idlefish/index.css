@@ -1,0 +1,101 @@
+body, ol, ul, h1, h2, h3, h4, h5, h6, p, th, td, dl, dd, form, fieldset, legend, input, textarea, select {
+    margin: 0;
+    padding: 0;
+}
+ul {
+    list-style: none;
+}
+li {
+    float: left;
+}
+a:link, a:visited {
+    text-decoration: none;
+}
+.wrap{
+    width:1200px;
+    min-height:100px;
+    padding-bottom:10px;
+    border-radius:5px;
+    -webkit-border-radius:5px;
+    -moz-border-radius:5px;
+    border:1px solid #eee;
+    background:#fcfcfc;
+    margin: 20px auto;
+}
+.fileBtn{display:none;}
+.fileBtn_pond{display:none;}
+.btn1{
+    display:inline-block;
+    width:88px;
+    height:34px;
+    color:#fff;
+    border-radius:3px;
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    background:#00b7ef;
+    font:16px/34px microsoft yahei,simhei;
+    text-align:center;
+}
+.btn_pond{
+    display:inline-block;
+    width:88px;
+    height:34px;
+    color:#fff;
+    border-radius:3px;
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    background:#00b7ef;
+    font:16px/34px microsoft yahei,simhei;
+    text-align:center;
+}
+.btn2{
+    width:82px;
+    height:34px;
+    display:inline-block;
+    position:relative;
+    top:-2px;
+}
+.btnBox{
+    padding-left:20px
+}
+.filesName{
+    padding:20px;
+    font-weight:bold;
+}
+.uploadState{
+    padding-left:20px;
+    padding-bottom:20px;
+    font-weight:normal;
+    color:#f60;
+}
+#upform{
+    font:16px/34px microsoft yahei,simhei;
+    margin-left: 50px;
+}
+::-webkit-scrollbar{
+    width: 0;
+}
+
+
+/*多选框*/
+/*! CSS Used from: http://www.jq22.com/demo/inserthtml/styles.css */
+label{display:inline;}
+.center{margin:0px auto;}
+input[type="checkbox"]{display:none;}
+/*! CSS Used from: http://www.jq22.com/demo/inserthtml/inserthtml.com.radios.min.css */
+input[type=checkbox]{display:none;}
+input[type=checkbox]+label{cursor:pointer;font-size:1em;}
+[id^=checkbox-7-]+label{background-color:#FFF;padding:6px 43px 8px 9px;border-radius:5px;display:inline-block;position:relative;margin-right:30px;box-shadow:0 0 2px rgba(0,0,0,.3);height:17px;overflow:hidden;font-size:1.3em!important;color:#464E50;-webkit-transition:all .3s linear,color 0 linear;transition:all .3s linear,color 0 linear;}
+[id^=checkbox-7-]+label:after{content:' ';position:absolute;background:#FFF;top:4px;right:3px;width:24px;display:block;font-size:1em!important;height:16px;border-radius:3px;box-shadow:0 0 1px rgba(0,0,0,.6),inset 0 -18px 15px -10px rgba(0,0,0,.05);padding:4px 0;text-align:center;color:#496F7A;}
+[id^=checkbox-7-]:checked+label{color:#fff;}
+[id^=checkbox-7-]+label>span{position:relative;z-index:99999;font-family:adelle-sans,sans-serif;}
+[id^=checkbox-7-]:active+label:after{box-shadow:0 0 1px rgba(0,0,0,.6),inset 0 2px 6px rgba(0,0,0,.1),inset 0 -18px 15px -10px rgba(0,0,0,.05);}
+[id^=checkbox-7-]:checked+label:after{content:'\2715';}
+[id^=checkbox-7-]+label:before{content:' ';position:absolute;background:#6AC6DD;width:0;height:100%;top:0;-webkit-transition:all .3s ease-in;transition:all .3s ease-in;left:0;}
+[id^=checkbox-7-]:checked+label:before{content:' ';position:absolute;width:100%;height:100%;text-shadow:0 1px 0 rgba(0,0,0,.1);top:0;left:0;}
+#checkbox-7-2+label:before{width:100%;height:0;}
+#checkbox-7-2:checked+label:before{width:100%;height:100%;}
+#checkbox-7-3+label:before{width:100%;height:0;bottom:0;top:auto;}
+#checkbox-7-3:checked+label:before{width:100%;height:100%;}
+#checkbox-7-4+label:before{width:0;height:100%;left:auto;right:0;}
+#checkbox-7-4:checked+label:before{width:100%;height:100%;}

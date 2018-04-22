@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <link href="index.css" rel="stylesheet" type="text/css"/>
+    <title>鱼塘配置</title>
+    <script type="text/javascript" src="jq.js"></script>
+    <!--提交数据-->
+    <script type="text/javascript">
+        <!--提交表单-->
+        function upload() {
+            var formData = new FormData(document.querySelector("#upform"));
+            $.ajax({
+                url : '/api/setPond',
+                type : 'POST',
+                success : function(value) {
+                    var rs = JSON.parse(value);
+                    if(!rs.res){
+                        alert(rs.msg);
+                        return;
+                    }
+                    var ct = $("#jsonContainer")[0];
+                    ct.innerHTML = "";
+                    for(var t of rs.data){
+                        var tr = document.createElement("tr");
+                        var tdl = document.createElement("td");
+                        var tdr = document.createElement("td");
+                        tdl.innerText = t.machine;
+                        tdr.innerText = t.ponds.join(",");
+                        tr.appendChild(tdl);
+                        tr.appendChild(tdr);
+                        ct.appendChild(tr);
+                    }
+                    alert(rs.msg);
+                },
+                error : function(e) {
+                    alert("上传出错！");
+                },
+                // Form数据
+                data : formData,
+                cache : false,
+                contentType : false,
+                processData : false
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        window.onload = function () {
+            $.ajax({
+                url : '/api/machines',
+                type : 'GET',
+                success : function(value) {
+                    var rs = JSON.parse(value);
+                    var ct = $("#jsonContainer")[0];
+                    ct.innerHTML = "";
+                    var tr = document.createElement("tr");
+                    var tdl = document.createElement("td");
+                    var tdr = document.createElement("td");
+                    tdl.innerText = "设备ID";
+                    tdr.innerText = "鱼塘";
+                    tr.appendChild(tdl);
+                    tr.appendChild(tdr);
+                    ct.appendChild(tr);
+                    for(var t of rs.data){
+                        var tr = document.createElement("tr");
+                        var tdl = document.createElement("td");
+                        var tdr = document.createElement("td");
+                        tdl.innerText = t.machine;
+                        tdr.innerText = t.ponds.join(",");
+                        tr.appendChild(tdl);
+                        tr.appendChild(tdr);
+                        ct.appendChild(tr);
+                    }
+                },
+            });
+        }
+    </script>
+</head>
+<body>
+<div class="wrap">
+    <h1 style="color: cornflowerblue;text-align: center">配置鱼塘</h1>
+    <div style="display: inline-flex;">
+    <form style="width: 60%;margin-right: 20px;" id="upform" method="POST" enctype="multipart/form-data">
+        <div for="name">设备ID</div><input name="name" type="text">
+        <div for="name">鱼塘(行/个)</div><textarea style="height: 50px;" name="ponds" type="text"></textarea>
+        <div style="margin-top: 10px;margin-left: 10px;">
+            <input type="button" value="提交" class="btn2" onclick="upload()"/>
+        </div>
+    </form>
+    <table style="overflow-y: scroll;" id="jsonContainer">
+    </table>
+    </div>
+</div>
+</body>
+</html>
