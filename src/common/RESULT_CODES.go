@@ -25,3 +25,8 @@ const(
 	REGISTER_ACCOUNT_EXIST = 1003
 
 )
+
+const(
+	ACTION_VIOLENCE = "潜在的攻击行为"
+
+)

@@ -50,7 +50,7 @@ func AddApp(w http.ResponseWriter, r *http.Request, user *model.T_user) {
 		Name:name,
 		Version:version,
 		Describe:describe,
-		Developer:user.Account,
+		Developer:user.Email,
 		Valid:valid,
 		File:file,
 		Src:src,

@@ -94,6 +94,19 @@ func IsEmail(s string) bool {
 }
 
 /**
+是否包含某个角色
+ */
+func IsRole(userRoles string, role string) bool {
+	roles := strings.Split(userRoles, ",")
+	for _, r := range roles {
+		if r == role {
+			return true
+		}
+	}
+	return false
+}
+
+/**
 发送邮件通知
  */
 func SendToMail(user, password, host, to, subject, body, mailtype string) error {

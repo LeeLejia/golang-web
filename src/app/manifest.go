@@ -11,6 +11,7 @@ var CodeModel model.DbModel
 var UserModel model.DbModel
 var VlogModel model.DbModel
 var FileModel model.DbModel
+var PublishModel model.DbModel
 
 
 func Init(){
@@ -42,9 +43,15 @@ func Init(){
 		fmt.Println(err.Error())
 		return
 	}
+	publish,err:=m.GetPublishModel()
+	if err!=nil{
+		fmt.Println(err.Error())
+		return
+	}
 	AppModel = app
 	CodeModel = code
 	UserModel = user
 	FileModel = file
 	VlogModel = vlog
+	PublishModel = publish
 }

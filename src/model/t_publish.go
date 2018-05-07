@@ -7,80 +7,87 @@ import (
 )
 
 /*
-DROP TABLE IF EXISTS t_app;
-CREATE TABLE t_app (
+DROP TABLE IF EXISTS t_publish;
+CREATE TABLE t_publish (
 "id" serial NOT NULL,
-"icon" text,
-"app_id" varchar(16) COLLATE "default",
+"state" int4 DEFAULT -1,
+"owner" text,
 "name" varchar(128) COLLATE "default",
-"version" varchar(16) COLLATE "default",
-"describe" varchar(255) COLLATE "default",
-"developer" varchar(128) COLLATE "default",
-"valid" bool DEFAULT TRUE,
-"file" varchar(256) COLLATE "default",
-"src" varchar(256) COLLATE "default",
-"expend" jsonb NOT NULL,
-"download_count" int4 DEFAULT -1,
+"describe" varchar(511) COLLATE "default",
+"money_lower" int4 DEFAULT -1,
+"money_upper" int4 DEFAULT -1,
+"outsourcing" bool DEFAULT TRUE,
+"labels" varchar(128) COLLATE "default",
+"commission" varchar(15) COLLATE "default",
+"need_code" bool DEFAULT FALSE,
+"annex" jsonb NOT NULL,
+"from_time" timestamp(6) DEFAULT CURRENT_TIMESTAMP,
+"to_time" timestamp(6) DEFAULT CURRENT_TIMESTAMP,
+"update_at" timestamp(6) DEFAULT CURRENT_TIMESTAMP,
 "created_at" timestamp(6) DEFAULT CURRENT_TIMESTAMP
 )
 WITH (OIDS=FALSE);
  */
 type T_publish struct {
-	ID            int64            `json:"id"`
-	Icon          string           `json:"icon"`
-	AppId         string           `json:"app_id"`
-	Name          string           `json:"name"`
-	Version       string           `json:"version"`
-	Describe      string           `json:"describe"`
-	Developer     string           `json:"developer"`
-	Valid         bool             `json:"valid"`
-	File          string           `json:"file"`
-	Src           string           `json:"src"`
-	Expend        *simplejson.Json `json:"expend"`
-	DownloadCount int              `json:"download_count"`
-	CreatedAt     time.Time        `json:"created_at"`
+	ID          int64            `json:"id"`
+	Owner       string           `json:"owner"`
+	Name        string           `json:"name"`
+	Describe    string           `json:"describe"`
+	MoneyLow    int              `json:"money_lower"`
+	MoneyUp     int              `json:"money_upper"`
+	OutSourcing bool             `json:"outsourcing"`
+	Labels      string           `json:"labels"`
+	Commission  string           `json:"commission"`
+	NeedCode    bool             `json:"need_code"`
+	Annex       *simplejson.Json `json:"annex"`
+	FromTime    time.Time        `json:"from_time"`
+	ToTime      time.Time        `json:"to_time"`
+	UpdateTime  time.Time        `json:"update_at"`
+	CreatedTime time.Time        `json:"created_at"`
 }
 
 func GetPublishModel() (m.DbModel, error){
 	sc:=m.SqlController {
-		TableName:      "t_app",
-		InsertColumns:  []string{"icon","app_id","version","name","describe","developer","valid","file","src","expend","download_count","created_at"},
-		QueryColumns:   []string{"id","icon","app_id","version","name","describe","developer","valid","file","src","expend","download_count","created_at"},
-		InSertFields:   insertAppFields,
-		QueryField2Obj: queryAppField2Obj,
+		TableName:      "t_publish",
+		InsertColumns:  []string{"owner","name","describe","money_lower","money_upper","outsourcing","labels","commission","need_code","annex","from_time","to_time","update_at","created_at"},
+		QueryColumns:   []string{"id","owner","name","describe","money_lower","money_upper","outsourcing","labels","commission","need_code","annex","from_time","to_time","update_at","created_at"},
+		InSertFields:   insertPublishFields,
+		QueryField2Obj: queryPublishField2Obj,
 	}
 	return m.GetModel(sc)
 }
 
 func insertPublishFields(obj interface{}) []interface{} {
-	app:=obj.(T_app)
-	expend := []byte("{}")
-	if app.Expend != nil {
-		bs, err := app.Expend.MarshalJSON()
+	publish:=obj.(T_publish)
+	Annex := []byte("{}")
+	if publish.Annex != nil {
+		bs, err := publish.Annex.MarshalJSON()
 		if err==nil{
-			expend = bs
+			Annex = bs
 		}
 	}
 	return []interface{}{
-		app.Icon,app.AppId,app.Version,app.Name,app.Describe,app.Developer,app.Valid,app.File,app.Src,expend,app.DownloadCount,app.CreatedAt,
+		publish.Owner, publish.Name, publish.Describe, publish.MoneyLow, publish.MoneyUp, publish.OutSourcing, publish.Labels, publish.Commission, publish.NeedCode, Annex, publish.FromTime, publish.ToTime, publish.UpdateTime, publish.CreatedTime,
 	}
 }
 func queryPublishField2Obj(fields []interface{}) interface{} {
-	expend,_:=simplejson.NewJson(m.GetByteArr(fields[10]))
-	app:=T_app{
-		ID:m.GetInt64(fields[0],0),
-		Icon:m.GetString(fields[1]),
-		AppId:m.GetString(fields[2]),
-		Name:m.GetString(fields[4]),
-		Version:m.GetString(fields[3]),
-		Describe:m.GetString(fields[5]),
-		Developer:m.GetString(fields[6]),
-		Valid:m.GetBool(fields[7],true),
-		File:m.GetString(fields[8]),
-		Src:m.GetString(fields[9]),
-		Expend:expend,
-		DownloadCount:m.GetInt(fields[11],0),
-		CreatedAt:m.GetTime(fields[12],time.Now()),
+	annex, _ := simplejson.NewJson(m.GetByteArr(fields[10]))
+	publish := T_publish{
+		ID:          m.GetInt64(fields[0], 0),
+		Owner:       m.GetString(fields[1]),
+		Name:        m.GetString(fields[2]),
+		Describe:    m.GetString(fields[3]),
+		MoneyLow:    m.GetInt(fields[4], 0),
+		MoneyUp:     m.GetInt(fields[5], 0),
+		OutSourcing: m.GetBool(fields[6], true),
+		Labels:      m.GetString(fields[7]),
+		Commission:  m.GetString(fields[8]),
+		NeedCode:    m.GetBool(fields[9], false),
+		Annex:       annex,
+		FromTime:    m.GetTime(fields[11], time.Now()),
+		ToTime:      m.GetTime(fields[12], time.Now()),
+		UpdateTime:  m.GetTime(fields[13], time.Now()),
+		CreatedTime: m.GetTime(fields[14], time.Now()),
 	}
-	return app
+	return publish
 }
