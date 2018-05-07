@@ -6,6 +6,8 @@ import (
 	"../model"
 	fm "github.com/cjwddz/fast-model"
 	"net/http"
+	"strings"
+	"time"
 )
 
 /**
@@ -24,8 +26,12 @@ func Login(_ *common.Session, w http.ResponseWriter, r *http.Request) {
 		common.ReturnEFormat(w, common.CODE_PARAMS_INVALID, "密码不能为空")
 		return
 	}
+	if osType == "" {
+		common.ReturnEFormat(w, common.CODE_PARAMS_INVALID, "终端类型缺失")
+		return
+	}
 	log.I("login请求","","account:%s,pwd:%s,osType:%s",account,pwd,osType)
-	user, err := UserModel.Query(fm.DbCondition{}.And("=","account",account).Limit(1,-1))
+	user, err := UserModel.Query(fm.DbCondition{}.Or("=","email",account).Or("=","phone",account).Limit(1,-1))
 	if err != nil {
 		common.ReturnEFormat(w, common.CODE_SERVICE_ERR, "服务器出错！请稍后重试.")
 		log.E("login出错","",err.Error())
@@ -34,10 +40,6 @@ func Login(_ *common.Session, w http.ResponseWriter, r *http.Request) {
 	if len(user) == 0 {
 		common.ReturnEFormat(w, common.CODE_VERIFY_FAIL, "用户不存在")
 		log.W("login失败","","account:%s,pwd:%s,osType:%s,reason:%s",account,pwd,osType,"用户不存在")
-		return
-	}
-	if osType == "" {
-		common.ReturnEFormat(w, common.CODE_PARAMS_INVALID, "终端类型缺失")
 		return
 	}
 	usr:=user[0].(model.T_user)
@@ -55,7 +57,7 @@ func Login(_ *common.Session, w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w,&http.Cookie{Name:"sessionId",Value:sessionId,Path:"/"})
 	http.SetCookie(w,&http.Cookie{Name:"token",Value:session.Token,Path:"/"})
 	tmp:=map[string]interface{}{
-		"account":usr.Account,
+		"account":account,
 		"role": usr.Role,
 		"nick": usr.Nick,
 		"avatar": usr.Avatar,
@@ -68,7 +70,7 @@ func Login(_ *common.Session, w http.ResponseWriter, r *http.Request) {
 用户注销
  */
 func Logout(sess *common.Session, w http.ResponseWriter, r *http.Request) {
-	log.N("logout",sess.User.Account,"注销成功！")
+	log.N("logout",sess.User.Email,"注销成功！")
 	common.RemoveSession(r)
 	common.ReturnFormat(w, common.CODE_OK, map[string]interface{}{"msg":"注销成功！"})
 }
@@ -78,8 +80,9 @@ func Logout(sess *common.Session, w http.ResponseWriter, r *http.Request) {
 func Register(_ *common.Session, w http.ResponseWriter, r *http.Request) {
 	phone := r.PostFormValue("phone")
 	email := r.PostFormValue("email")
-	pwd := r.PostFormValue("pwd")
-	role := r.PostFormValue("role")
+	pwd := r.PostFormValue("password")
+	role := r.PostFormValue("roles")
+	nick := r.PostFormValue("nick")
 	if phone == "" {
 		common.ReturnEFormat(w, common.CODE_VERIFY_FAIL, "手机号不能为空")
 		return
@@ -104,11 +107,22 @@ func Register(_ *common.Session, w http.ResponseWriter, r *http.Request) {
 		common.ReturnEFormat(w,common.CODE_VERIFY_FAIL, "请输入至少6位的密码")
 		return
 	}
-	if role!= model.USER_ROLE_COMMON && role!=model.USER_ROLE_DEVELOPER{
-		common.ReturnEFormat(w,common.CODE_VERIFY_FAIL, "请选择正确的账号类型")
+	roles:=strings.Split(role,",")
+	for _,r:= range roles{
+		if r != model.USER_ROLE_EMPLOYER && r!=model.USER_ROLE_ADMIN && r!=model.USER_ROLE_DEVELOPER {
+			common.ReturnEFormat(w,common.CODE_VERIFY_FAIL, "不能设置非法角色")
+			return
+		}
+		if r== model.USER_ROLE_ADMIN && len(roles)>1{
+			common.ReturnEFormat(w,common.CODE_VERIFY_FAIL, "管理员角色不能和其它角色一起设置")
+			return
+		}
+	}
+	if nick == "" {
+		common.ReturnEFormat(w,common.CODE_VERIFY_FAIL, "昵称不能为空!")
 		return
 	}
-	log.I("register请求","","phone:%s,email:%s,role:%s",phone,email,role)
+	log.I("register请求","","phone:%s,email:%s,role:%s,nick:%s",phone,email,role,nick)
 	users, err := UserModel.Query(fm.DbCondition{}.Or("=","phone",phone).Or("=","email",email).Limit(1,-1))
 	if err==nil && len(users) > 0 {
 		user:=users[0].(model.T_user)
@@ -121,21 +135,22 @@ func Register(_ *common.Session, w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	// todo 设置默认昵称，默认头像
-	user := &model.T_user{
+	user := model.T_user{
 		Role:role,
-		Nick:"新手",
+		Nick:nick,
 		Pwd:pwd,
 		Status:model.USER_STATUS_VALID,
 		Avatar:"https://avatars2.githubusercontent.com/u/24471738?v=4&s=40",
 		Phone:phone,
 		Email:email,
 		QQ:"",
+		UpdatedAt:time.Now(),
+		CreatedAt:time.Now(),
 	}
 	err = UserModel.Insert(user)
 	if err != nil {
 		log.E("register失败","","phone:%s,email:%s,role:%s,reason:%s",phone,email,role,err.Error())
-		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, "创建新用户出错,请稍后再试.")
+		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, "恭喜你找到个bug..创建新用户出错,劳烦转告下管理员!")
 		return
 	}
 	common.ReturnFormat(w, common.CODE_OK, map[string]interface{}{"msg":"注册成功，请重新登录！"})

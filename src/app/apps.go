@@ -51,7 +51,6 @@ func AddApp(sess *common.Session, w http.ResponseWriter, r *http.Request) {
 		Name:name,
 		Version:version,
 		Describe:describe,
-		Developer:sess.User.Account,
 		Valid:valid,
 		File:file,
 		Src:src,

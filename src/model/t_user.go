@@ -31,6 +31,7 @@ const (
 	USER_ROLE_DEVELOPER = "developer"
 	USER_ROLE_ADMIN = "admin"
 	USER_ROLE_SUPER = "super"
+	USER_ROLE_EMPLOYER = "employer"
 
 	USER_STATUS_INVALID=0
 	USER_STATUS_VALID=1
@@ -39,7 +40,6 @@ const (
 // 用戶表
 type T_user struct {
 	Id        int64                `json:"id"`
-	Account   string			 `json:"account"`
 	Pwd       string             `json:"pwd"`
 	Role      string             `json:"role"`
 	Nick      string             `json:"nick"`
@@ -55,8 +55,8 @@ type T_user struct {
 func GetUserModel() (m.DbModel, error){
 	sc:=m.SqlController {
 		TableName:      "t_user",
-		InsertColumns:  []string{"account","pwd","role","nick","avatar","phone","email","qq","status","expend","updated_at","created_at"},
-		QueryColumns:   []string{"id","account","pwd","role","nick","avatar","phone","email","qq","status","expend","updated_at","created_at"},
+		InsertColumns:  []string{"pwd","role","nick","avatar","phone","email","qq","status","expend","updated_at","created_at"},
+		QueryColumns:   []string{"id","pwd","role","nick","avatar","phone","email","qq","status","expend","updated_at","created_at"},
 		InSertFields:   insertUserFields,
 		QueryField2Obj: queryUserField2Obj,
 	}
@@ -73,25 +73,24 @@ func insertUserFields(obj interface{}) []interface{} {
 		}
 	}
 	return []interface{}{
-		user.Account, user.Pwd, user.Role, user.Nick, user.Avatar, user.Phone, user.Email, user.QQ, user.Status, expend, user.UpdatedAt, user.CreatedAt,
+		user.Pwd, user.Role, user.Nick, user.Avatar, user.Phone, user.Email, user.QQ, user.Status, expend, user.UpdatedAt, user.CreatedAt,
 	}
 }
 func queryUserField2Obj(fields []interface{}) interface{} {
-	expend,_:=simplejson.NewJson(m.GetByteArr(fields[10]))
+	expend,_:=simplejson.NewJson(m.GetByteArr(fields[9]))
 	user :=T_user{
 		Id:m.GetInt64(fields[0],0),
-		Account:m.GetString(fields[1]),
-		Pwd:m.GetString(fields[2]),
-		Role:m.GetString(fields[3]),
-		Nick:m.GetString(fields[4]),
-		Avatar:m.GetString(fields[5]),
-		Phone:m.GetString(fields[6]),
-		Email:m.GetString(fields[7]),
-		QQ:m.GetString(fields[8]),
-		Status:m.GetInt(fields[9],USER_STATUS_INVALID),
+		Pwd:m.GetString(fields[1]),
+		Role:m.GetString(fields[2]),
+		Nick:m.GetString(fields[3]),
+		Avatar:m.GetString(fields[4]),
+		Phone:m.GetString(fields[5]),
+		Email:m.GetString(fields[6]),
+		QQ:m.GetString(fields[7]),
+		Status:m.GetInt(fields[8],USER_STATUS_INVALID),
 		Expend:expend,
-		UpdatedAt:m.GetTime(fields[11],time.Now()),
-		CreatedAt:m.GetTime(fields[12],time.Now()),
+		UpdatedAt:m.GetTime(fields[10],time.Now()),
+		CreatedAt:m.GetTime(fields[11],time.Now()),
 	}
 	return user
 }

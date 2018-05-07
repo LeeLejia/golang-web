@@ -48,7 +48,7 @@ func (sess *Session)RefreshTime(){
 保存session
  */
 func SaveSession(user model.T_user, osType string) (sessionKey string, sess *Session) {
-	sessionKey = GetSessionID(user.Account,osType, user.Role)
+	sessionKey = GetSessionID(user.Email,osType, user.Role)
 	sess = new(Session)
 	sess.User = user
 	sess.GetToken()

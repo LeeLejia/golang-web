@@ -37,28 +37,28 @@ func UploadMarkdown(sess *common.Session, w http.ResponseWriter, r *http.Request
 	t, err := os.Create(filePath)
 	if err != nil {
 		common.ReturnEFormat(w, common.CODE_SERVICE_ERR, "内部服务出错！")
-		log.E("UploadFile出错",sess.User.Account,err.Error())
+		log.E("UploadFile出错",sess.User.Email,err.Error())
 		return
 	}
 	defer t.Close()
 	if _, err := io.Copy(t, f); err != nil {
 		common.ReturnEFormat(w, common.CODE_SERVICE_ERR, "内部服务出错！")
-		log.E("UploadFile出错",sess.User.Account,err.Error())
+		log.E("UploadFile出错",sess.User.Email,err.Error())
 		return
 	}
 	file:=model.T_File{
 		Key:fileKey,
 		Type:fileType,
 		Name:h.Filename,
-		Owner:sess.User.Account,
+		Owner:sess.User.Email,
 		CreatedAt:time.Now(),
 	}
 	err=FileModel.Insert(file)
 	if err!=nil{
-		log.E("UploadFile出错",sess.User.Account,err.Error())
+		log.E("UploadFile出错",sess.User.Email,err.Error())
 		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, "数据库写入失败！")
 		return
 	}
 	common.ReturnFormat(w, common.CODE_OK, map[string]interface{}{"key": fileKey,"msg":"success"})
-	log.N("UploadFile上传文件成功",sess.User.Account,h.Filename)
+	log.N("UploadFile上传文件成功",sess.User.Email,h.Filename)
 }
