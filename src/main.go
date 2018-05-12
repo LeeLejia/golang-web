@@ -36,9 +36,10 @@ func BeginServer(){
 		// 发布任务
 		{Url:"/api/publish",Check:true,Handle:app.Publish},
 		// 文件校验/上传图片/上传文件
-		{Url:"/api/checkSha256",Check:false,Handle:app.CheckSha256},
-		{Url:"/api/uploadPicture",Check:true,Handle:app.UploadPicture},
+		{Url:"/api/checkSha256",Check:true,Handle:app.CheckSha256},
 		{Url:"/api/uploadFile",Check:true,Handle:app.UploadFile},
+		{Url:"/api/listFiles",Check:true,Handle:app.ListFiles},
+		{Url:"/api/deleteFile",Check:true,Handle:app.DeleteFile},
 		// App添加/删除/列表获取
 		{Url:"/api/developer/add-app",Check:true,Handle:app.AddApp},
 		{Url:"/api/developer/list-apps",Check:true,Handle:app.ListApps},

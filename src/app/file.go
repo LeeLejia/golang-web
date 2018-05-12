@@ -10,35 +10,74 @@ import (
 	"io"
 	fm "github.com/cjwddz/fast-model"
 	"time"
-	"strings"
-	"path"
 	"fmt"
+	"strconv"
 )
-
 /**
-获取文件
-只有管理员和超级管理员可以获取文件列表
-其他成员只能下载单个文件
+获取文件列表
  */
-func ListFiles(ssesion * common.Session,w http.ResponseWriter, r *http.Request){
-	if ssesion.User.Role!=model.USER_ROLE_SUPER && ssesion.User.Role!=model.USER_ROLE_ADMIN{
-		common.ReturnEFormat(w, common.CODE_ROLE_INVADE,"你没有获取文件列表权限！")
+func ListFiles(sess * common.Session,w http.ResponseWriter, r *http.Request){
+	cond:=fm.DbCondition{}.And2(r,"like","s_type").And2(r,"like","s_name").And("=","owner",sess.User.Email)
+	total,err:=FileModel.Count(cond)
+	if err!=nil{
+		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, "服务器内部出错！")
+		log.E("ListFiles出错",sess.User.Email,err.Error())
 		return
 	}
+	result,_:=FileModel.Query(cond.Limit2(r,"start","count"))
+	if err!=nil{
+		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, "服务器内部出错！")
+		log.E("ListFiles出错",sess.User.Email,err.Error())
+		return
+	}
+	common.ReturnFormat(w, common.CODE_OK, map[string]interface{}{"files": result,"total":total})
+	log.N("ListFiles",sess.User.Email,fmt.Sprintf("listCount=%d,total=%d",len(result),total))
+	return
 }
-
+/**
+删除文件
+ */
+func DeleteFile(sess * common.Session,w http.ResponseWriter, r *http.Request){
+	r.ParseForm()
+	hash:=r.Form.Get("hash")
+	if hash == "" {
+		common.ReturnEFormat(w, common.CODE_PARAMS_INVALID, "需要提供文件hash")
+		return
+	}
+	idStr:=r.Form.Get("id")
+	if idStr == "" {
+		common.ReturnEFormat(w, common.CODE_PARAMS_INVALID, "需要文件id")
+		return
+	}
+	id,err:=strconv.Atoi(idStr)
+	if err!= nil {
+		common.ReturnEFormat(w, common.CODE_PARAMS_INVALID, "非法id")
+		log.W("DeleteFile",sess.User.Email,err.Error())
+		return
+	}
+	cond:=fm.DbCondition{}.And("=","owner",sess.User.Email).And("=","id",id).And("=","key",hash)
+	err = FileModel.Delete(cond)
+	if err!=nil{
+		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, "服务器内部出错！")
+		log.E("DeleteFile",sess.User.Email,err.Error())
+		return
+	}
+	common.ReturnFormat(w, common.CODE_OK, map[string]interface{}{"msg": "删除文件成功","id":id,"hash":hash})
+	log.N("DeleteFile",sess.User.Email,fmt.Sprintf("id=%d,hash=%s",id,hash))
+	return
+}
 /**
 检查sha256,判断文件是否存在
  */
-func CheckSha256(_ *common.Session, w http.ResponseWriter, r *http.Request){
+func CheckSha256(sess *common.Session, w http.ResponseWriter, r *http.Request){
 	r.ParseForm()
 	// 获取sha256
-	sha256:=r.Form.Get("sha256")
+	sha256:=r.Form.Get("hash")
 	if sha256==""{
-		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"参数缺少sha256！")
+		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"请提供hash值！")
 		return
 	}else if len(sha256)!=64{
-		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"sha256不合法！")
+		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"hash不合法！")
 		return
 	}
 	// 判断文件是否存在
@@ -47,12 +86,22 @@ func CheckSha256(_ *common.Session, w http.ResponseWriter, r *http.Request){
 		common.ReturnFormat(w,common.CODE_SUCCESS,map[string]interface{}{"exist":false,"msg":"文件不存在！"})
 		return
 	}
+	newfile := rs[0].(model.T_File)
+	newfile.Owner = sess.User.Email
+	newfile.CreatedAt = time.Now()
+	err=FileModel.Insert(newfile)
+	if err!=nil{
+		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, "服务器内部出错！")
+		log.E("UploadFile出错",sess.User.Email,err.Error())
+		return
+	}
+	log.N("CheckSha256插入新数据成功",sess.User.Email,newfile.Name)
 	common.ReturnFormat(w,common.CODE_SUCCESS,map[string]interface{}{"exist":true,"sha256":sha256})
 	return
 }
 
 /**
-	上传小文件
+	上传文件
  */
 func UploadFile(sess *common.Session, w http.ResponseWriter, r *http.Request) {
 	f, h, err := r.FormFile("file")
@@ -61,94 +110,44 @@ func UploadFile(sess *common.Session, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer f.Close()
-	fileKey := r.FormValue("sha256")
+	fileKey := r.FormValue("hash")
 	if len(fileKey)!=64{
 		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"文件指纹缺失！")
 		return
 	}
-	fileType:=r.FormValue("type")
-	if fileType==""{
-		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"未指定文件类型！")
+	if h.Size> 512*1024*1024{
+		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"上传的文件不能超过512M")
 		return
 	}
+
 	filePath := conf.App.PathFile +"/"+ fileKey
 	t, err := os.Create(filePath)
 	if err != nil {
-		common.ReturnEFormat(w, common.CODE_SERVICE_ERR, "内部服务出错！")
+		common.ReturnEFormat(w, common.CODE_SERVICE_ERR, "服务器内部出错！")
 		log.E("UploadFile出错",sess.User.Email,err.Error())
 		return
 	}
 	defer t.Close()
 	if _, err := io.Copy(t, f); err != nil {
-		common.ReturnEFormat(w, common.CODE_SERVICE_ERR, "内部服务出错！")
+		common.ReturnEFormat(w, common.CODE_SERVICE_ERR, "服务器内部出错！")
 		log.E("UploadFile出错",sess.User.Email,err.Error())
 		return
 	}
 	file:=model.T_File{
 		Key:fileKey,
-		Type:fileType,
+		Type:h.Header.Get("Content-Type"),
+		Size:h.Size,
 		Name:h.Filename,
 		Owner:sess.User.Email,
 		CreatedAt:time.Now(),
 	}
 	err=FileModel.Insert(file)
 	if err!=nil{
+		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, "服务器内部出错！")
 		log.E("UploadFile出错",sess.User.Email,err.Error())
-		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, "数据库写入失败！")
 		return
 	}
 	common.ReturnFormat(w, common.CODE_OK, map[string]interface{}{"key": fileKey,"msg":"success"})
 	log.N("UploadFile上传文件成功",sess.User.Email,h.Filename)
+	return
 }
-
-/**
-上传图片
- */
-func UploadPicture(sess *common.Session, w http.ResponseWriter, r *http.Request){
-	f, h, err := r.FormFile("img")
-	if err != nil {
-		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"请提交图片")
-		return
-	}
-	defer f.Close()
-	filename := h.Filename
-	fileSuffix := strings.ToLower(path.Ext(filename))
-	if fileSuffix != ".jpg" && fileSuffix != ".png" && fileSuffix!=".gif" && fileSuffix!=".jpeg"{
-		common.ReturnEFormat(w, 500, fmt.Sprintf("不支持的图片格式'%s'", fileSuffix))
-		return
-	}
-	fileKey := r.FormValue("sha256")
-	if len(fileKey)!=64{
-		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID,"文件指纹缺失！")
-		return
-	}
-	filePath := conf.App.PathFile +"/"+ fileKey
-	t, err := os.Create(filePath)
-	if err != nil {
-		common.ReturnEFormat(w, common.CODE_SERVICE_ERR, "内部服务出错！")
-		log.E("UploadPicture出错",sess.User.Email,err.Error())
-		return
-	}
-	defer t.Close()
-	if _, err := io.Copy(t, f); err != nil {
-		common.ReturnEFormat(w, common.CODE_SERVICE_ERR, "内部服务出错！")
-		log.E("UploadPicture出错",sess.User.Email,err.Error())
-		return
-	}
-	file:=model.T_File{
-		Key:fileKey,
-		Type:"picture-normal",
-		Name:h.Filename,
-		Owner:sess.User.Email,
-		CreatedAt:time.Now(),
-	}
-	err=FileModel.Insert(file)
-	if err!=nil{
-		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, "数据库写入失败！")
-		log.E("UploadPicture出错",sess.User.Email,err.Error())
-		return
-	}
-	common.ReturnFormat(w, common.CODE_OK, map[string]interface{}{"key": fileKey,"msg":"success"})
-	log.N("UploadPicture上传图片成功",sess.User.Email,h.Filename)
-}
-
