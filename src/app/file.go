@@ -24,7 +24,7 @@ func ListFiles(sess * common.Session,w http.ResponseWriter, r *http.Request){
 		log.E("ListFiles出错",sess.User.Email,err.Error())
 		return
 	}
-	result,_:=FileModel.Query(cond.Limit2(r,"start","count").Order("order by created_at desc"))
+	result,err:=FileModel.Query(cond.Limit2(r,"start","count").Order("order by created_at desc"))
 	if err!=nil{
 		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, "服务器内部出错！")
 		log.E("ListFiles出错",sess.User.Email,err.Error())

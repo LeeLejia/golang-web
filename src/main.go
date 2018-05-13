@@ -37,6 +37,7 @@ func BeginServer(){
 		{Url:"/api/register",Check:false,Handle:app.Register},
 		// 发布任务
 		{Url:"/api/publish",Check:true,Handle:app.Publish},
+		{Url:"/api/getTask",Check:false,Handle:app.GetTask},
 		// 文件校验/上传图片/上传文件
 		{Url:"/api/checkSha256",Check:true,Handle:app.CheckSha256},
 		{Url:"/api/uploadFile",Check:true,Handle:app.UploadFile},

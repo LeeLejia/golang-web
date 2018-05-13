@@ -5,17 +5,31 @@ import (
 	"../common"
 	"../common/log"
 	"../model"
-	//
-	//"fmt"
 	"strconv"
 	"github.com/bitly/go-simplejson"
+	fm "github.com/cjwddz/fast-model"
 	"time"
+	"fmt"
 )
 
-
+type Task struct {
+	ID          int64     `json:"id"`
+	Name        string    `json:"name"`
+	Describe    string    `json:"describe"`
+	MoneyLow    int       `json:"money_lower"`
+	MoneyUp     int       `json:"money_upper"`
+	//OutSourcing bool      `json:"outsourcing"`
+	Labels      string    `json:"labels"`
+	//Commission  string    `json:"commission"`
+	NeedCode    bool      `json:"need_code"`
+	Annex       string    `json:"annex"`
+	FromTime    int64 `json:"from_time"`
+	ToTime      int64 `json:"to_time"`
+	UpdateTime  int64 `json:"update_at"`
+	CreatedTime int64 `json:"created_at"`
+}
 
 func Publish(sess *common.Session, w http.ResponseWriter, r *http.Request){
-
 	if !common.IsRole(sess.User.Role,model.USER_ROLE_EMPLOYER){
 		log.W(common.ACTION_VIOLENCE,sess.User.Email,"该用户roles=%s,尝试发布任务.",sess.User.Role)
 		common.ReturnEFormat(w,common.CODE_ROLE_INVADE, "抱歉,你不并是雇主,请先到个人信息页面修改角色.")
@@ -95,4 +109,42 @@ func Publish(sess *common.Session, w http.ResponseWriter, r *http.Request){
 	}
 	common.ReturnFormat(w, common.CODE_OK, map[string]interface{}{"msg":"发布任务成功!"})
 	log.N("publish成功",publish.Owner,"projectName:%s,money_lower:%d,money_upper:%d",name,money_lower,money_upper)
+}
+
+func GetTask(_ *common.Session, w http.ResponseWriter, r *http.Request) {
+	cond:=fm.DbCondition{}
+	total,err:=PublishModel.Count(cond)
+	if err!=nil{
+		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, "服务器内部出错！")
+		log.E("GetTask","",err.Error())
+		return
+	}
+	result,err:=PublishModel.Query(cond.Limit2(r,"start","count").Order("order by created_at desc"))
+	if err!=nil{
+		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, "服务器内部出错！")
+		log.E("GetTask","",err.Error())
+		return
+	}
+	tasks:= make([]Task,len(result))
+	for i,item:=range result{
+		task:=item.(model.T_publish)
+		annex,_:=task.Annex.Encode()
+		tasks[i] = Task{
+			ID:          task.ID,
+			Name:        task.Name,
+			Describe:    task.Describe,
+			MoneyLow:    task.MoneyLow,
+			MoneyUp:     task.MoneyUp,
+			Labels:      task.Labels,
+			NeedCode:    task.NeedCode,
+			Annex:       string(annex),
+			FromTime:    task.FromTime.Unix(),
+			ToTime:      task.ToTime.Unix(),
+			UpdateTime:  task.UpdateTime.Unix(),
+			CreatedTime: task.CreatedTime.Unix(),
+		}
+	}
+	common.ReturnFormat(w, common.CODE_OK, map[string]interface{}{"tasks": tasks,"total":total})
+	log.N("GetTask","",fmt.Sprintf("listCount=%d,total=%d",len(result),total))
+	return
 }
