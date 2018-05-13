@@ -93,6 +93,6 @@ func Publish(sess *common.Session, w http.ResponseWriter, r *http.Request){
 		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, "恭喜你找到个bug..创建新用户出错,劳烦转告下管理员!")
 		return
 	}
-	common.ReturnFormat(w, common.CODE_OK, map[string]interface{}{"msg":"注册成功，请重新登录！"})
+	common.ReturnFormat(w, common.CODE_OK, map[string]interface{}{"msg":"发布任务成功!"})
 	log.N("publish成功",publish.Owner,"projectName:%s,money_lower:%d,money_upper:%d",name,money_lower,money_upper)
 }

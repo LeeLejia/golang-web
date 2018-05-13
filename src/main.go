@@ -19,6 +19,7 @@ func main() {
 	app.Init()
 	// 初始化日志系统
 	log.Init()
+	log.SetConfig(conf.App.LogOutConsole,conf.App.LogWriteDb)
 	defer func() {
 		log.Flush()
 	}()

@@ -52,6 +52,13 @@ func Init() {
 	LogModel = l
 }
 /**
+	配置
+ */
+func SetConfig(outConsole,writeDb bool){
+	CONF_WRITE_TO_DB = writeDb
+	FMT_OUT = outConsole
+}
+/**
 	debug
  */
 func D(tag string,operator string,msg ...interface{}) {

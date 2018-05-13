@@ -24,7 +24,7 @@ func ListFiles(sess * common.Session,w http.ResponseWriter, r *http.Request){
 		log.E("ListFiles出错",sess.User.Email,err.Error())
 		return
 	}
-	result,_:=FileModel.Query(cond.Limit2(r,"start","count"))
+	result,_:=FileModel.Query(cond.Limit2(r,"start","count").Order("order by created_at desc"))
 	if err!=nil{
 		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, "服务器内部出错！")
 		log.E("ListFiles出错",sess.User.Email,err.Error())
@@ -96,7 +96,7 @@ func CheckSha256(sess *common.Session, w http.ResponseWriter, r *http.Request){
 		return
 	}
 	log.N("CheckSha256插入新数据成功",sess.User.Email,newfile.Name)
-	common.ReturnFormat(w,common.CODE_SUCCESS,map[string]interface{}{"exist":true,"sha256":sha256})
+	common.ReturnFormat(w,common.CODE_SUCCESS,map[string]interface{}{"exist":true,"key":sha256})
 	return
 }
 

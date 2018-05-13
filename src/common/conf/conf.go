@@ -26,8 +26,10 @@ type tomlFile struct {
 	ServerHost string `toml:"serverHost"`
 	ServerPort string `toml:"serverPort"`
 	// 日志
-	LogCache    int `toml:"logCache"`
-	LogInterval int `toml:"logInterval"`
+	LogCache      int  `toml:"logCache"`
+	LogInterval   int  `toml:"logInterval"`
+	LogWriteDb    bool `toml:"logWriteDb"`
+	LogOutConsole bool `toml:"logOutConsole"`
 	// redis
 	RedisHost     string `toml:"www.cjwddz.cn"`
 	RedisPort     string `toml:"6379"`
