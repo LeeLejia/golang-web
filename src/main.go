@@ -10,6 +10,7 @@ import (
 	"html/template"
 	"io/ioutil"
 	"strings"
+	"strconv"
 )
 
 func main() {
@@ -48,6 +49,17 @@ func BeginServer(){
 		//{Url:"/api/developer/list-codes",Check:true,Handle2:app.ListCodes},
 	}
 	common.SetRouters(routers)
+	vcount:=0
+	http.HandleFunc("/clq", func(writer http.ResponseWriter, request *http.Request) {
+		vcount ++
+		request.ParseForm()
+		cs:=request.Form.Get("count")
+		if cs != "" {
+			vcount,_ = strconv.Atoi(cs)
+		}
+		writer.Write([]byte(fmt.Sprintf(`<html><body>页面维护,请稍后访问 ^_^<script>console.log('%d');console.log('ily4444longlongtime.')</script></body></html>`,vcount)))
+		return
+	})
 	http.Handle("/",http.FileServer(http.Dir(conf.App.StaticPath)))
 	fmt.Println("开始服务！")
 	err:=http.ListenAndServe(fmt.Sprintf(":%s", conf.App.ServerPort), nil)
@@ -55,6 +67,7 @@ func BeginServer(){
 		fmt.Println("服务退出！"+err.Error())
 	}
 }
+
 /** 初始化模板*/
 func InitTemplate(){
 	/**获取模板,设置页面*/
@@ -86,6 +99,7 @@ func InitTemplate(){
 		return
 	})
 }
+
 /**
 	获取模板入口
  */
