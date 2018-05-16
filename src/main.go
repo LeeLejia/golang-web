@@ -49,17 +49,6 @@ func BeginServer(){
 		//{Url:"/api/developer/list-codes",Check:true,Handle2:app.ListCodes},
 	}
 	common.SetRouters(routers)
-	vcount:=0
-	http.HandleFunc("/clq", func(writer http.ResponseWriter, request *http.Request) {
-		vcount ++
-		request.ParseForm()
-		cs:=request.Form.Get("count")
-		if cs != "" {
-			vcount,_ = strconv.Atoi(cs)
-		}
-		writer.Write([]byte(fmt.Sprintf(`<html><body>页面维护,请稍后访问 ^_^<script>console.log('%d');console.log('ily4444longlongtime.')</script></body></html>`,vcount)))
-		return
-	})
 	http.Handle("/",http.FileServer(http.Dir(conf.App.StaticPath)))
 	fmt.Println("开始服务！")
 	err:=http.ListenAndServe(fmt.Sprintf(":%s", conf.App.ServerPort), nil)
