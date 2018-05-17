@@ -35,6 +35,7 @@ func BeginServer(){
 		{Url:"/api/login",Check:false,Handle:app.Login},
 		{Url:"/api/logout",Check:true,Handle:app.Logout},
 		{Url:"/api/register",Check:false,Handle:app.Register},
+		{Url:"/api/setUserAvatar",Check:true,Handle:app.SetUserAvatar},
 		// 发布任务
 		{Url:"/api/publish",Check:true,Handle:app.Publish},
 		{Url:"/api/getTask",Check:false,Handle:app.GetTask},

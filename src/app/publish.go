@@ -12,23 +12,6 @@ import (
 	"fmt"
 )
 
-type Task struct {
-	ID          int64     `json:"id"`
-	Name        string    `json:"name"`
-	Describe    string    `json:"describe"`
-	MoneyLow    int       `json:"money_lower"`
-	MoneyUp     int       `json:"money_upper"`
-	//OutSourcing bool      `json:"outsourcing"`
-	Labels      string    `json:"labels"`
-	//Commission  string    `json:"commission"`
-	NeedCode    bool      `json:"need_code"`
-	Annex       string    `json:"annex"`
-	FromTime    int64 `json:"from_time"`
-	ToTime      int64 `json:"to_time"`
-	UpdateTime  int64 `json:"update_at"`
-	CreatedTime int64 `json:"created_at"`
-}
-
 func Publish(sess *common.Session, w http.ResponseWriter, r *http.Request){
 	if !common.IsRole(sess.User.Role,model.USER_ROLE_EMPLOYER){
 		log.W(common.ACTION_VIOLENCE,sess.User.Email,"该用户roles=%s,尝试发布任务.",sess.User.Role)
@@ -125,23 +108,23 @@ func GetTask(_ *common.Session, w http.ResponseWriter, r *http.Request) {
 		log.E("GetTask","",err.Error())
 		return
 	}
-	tasks:= make([]Task,len(result))
+	tasks:= make([]map[string]interface{},len(result))
 	for i,item:=range result{
 		task:=item.(model.T_publish)
 		annex,_:=task.Annex.Encode()
-		tasks[i] = Task{
-			ID:          task.ID,
-			Name:        task.Name,
-			Describe:    task.Describe,
-			MoneyLow:    task.MoneyLow,
-			MoneyUp:     task.MoneyUp,
-			Labels:      task.Labels,
-			NeedCode:    task.NeedCode,
-			Annex:       string(annex),
-			FromTime:    task.FromTime.Unix(),
-			ToTime:      task.ToTime.Unix(),
-			UpdateTime:  task.UpdateTime.Unix(),
-			CreatedTime: task.CreatedTime.Unix(),
+		tasks[i] = map[string]interface{} {
+			"id":          task.ID,
+			"name":        task.Name,
+			"describe":    task.Describe,
+			"money_lower":    task.MoneyLow,
+			"money_upper":     task.MoneyUp,
+			"labels":      task.Labels,
+			"need_code":    task.NeedCode,
+			"annex":       string(annex),
+			"from_time":    task.FromTime.Unix(),
+			"to_time":      task.ToTime.Unix(),
+			"update_at":  task.UpdateTime.Unix(),
+			"created_at": task.CreatedTime.Unix(),
 		}
 	}
 	common.ReturnFormat(w, common.CODE_OK, map[string]interface{}{"tasks": tasks,"total":total})
