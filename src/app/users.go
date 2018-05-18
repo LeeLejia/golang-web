@@ -56,11 +56,18 @@ func Login(_ *common.Session, w http.ResponseWriter, r *http.Request) {
 	sessionId,session := common.SaveSession(usr,osType)
 	http.SetCookie(w,&http.Cookie{Name:"sessionId",Value:sessionId,Path:"/"})
 	http.SetCookie(w,&http.Cookie{Name:"token",Value:session.Token,Path:"/"})
+	expend,_:=usr.Expend.Encode()
 	tmp:=map[string]interface{}{
-		"account":account,
 		"role": usr.Role,
 		"nick": usr.Nick,
 		"avatar": usr.Avatar,
+		"qq":usr.QQ,
+		"status":usr.Status,
+		"email": usr.Email,
+		"phone":usr.Phone,
+		"expend":string(expend),
+		"update_at":usr.UpdatedAt,
+		"created_at":usr.CreatedAt,
 	}
 	result := map[string]interface{}{"user": tmp, "sessionId":sessionId, "token": session.Token,"msg":"登录成功！"}
 	common.ReturnFormat(w, common.CODE_OK, result)
@@ -84,23 +91,23 @@ func Register(_ *common.Session, w http.ResponseWriter, r *http.Request) {
 	role := r.PostFormValue("roles")
 	nick := r.PostFormValue("nick")
 	if phone == "" {
-		common.ReturnEFormat(w, common.CODE_VERIFY_FAIL, "手机号不能为空")
+		common.ReturnEFormat(w, common.CODE_PARAMS_INVALID, "手机号不能为空")
 		return
 	}
 	if !common.IsPhone(phone) {
-		common.ReturnEFormat(w, common.CODE_VERIFY_FAIL, "手机号格式错误")
+		common.ReturnEFormat(w, common.CODE_PARAMS_INVALID, "手机号格式错误")
 		return
 	}
 	if email == ""{
-		common.ReturnEFormat(w, common.CODE_VERIFY_FAIL, "邮箱不能为空")
+		common.ReturnEFormat(w, common.CODE_PARAMS_INVALID, "邮箱不能为空")
 		return
 	}
 	if !common.IsEmail(email){
-		common.ReturnEFormat(w, common.CODE_VERIFY_FAIL, "邮箱格式错误")
+		common.ReturnEFormat(w, common.CODE_PARAMS_INVALID, "邮箱格式错误")
 		return
 	}
 	if pwd == "" {
-		common.ReturnEFormat(w,common.CODE_VERIFY_FAIL, "密码为空")
+		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID, "密码为空")
 		return
 	}
 	if len(pwd) < 6 {
@@ -119,7 +126,7 @@ func Register(_ *common.Session, w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if nick == "" {
-		common.ReturnEFormat(w,common.CODE_VERIFY_FAIL, "昵称不能为空!")
+		common.ReturnEFormat(w,common.CODE_PARAMS_INVALID, "昵称不能为空!")
 		return
 	}
 	log.I("register请求","","phone:%s,email:%s,role:%s,nick:%s",phone,email,role,nick)
@@ -161,5 +168,18 @@ func Register(_ *common.Session, w http.ResponseWriter, r *http.Request) {
 修改
 todo 记得同步session中的用户
  */
-func UpdateUser(_ *common.Session, w http.ResponseWriter, r *http.Request) {
+func SetUserAvatar(sess *common.Session, w http.ResponseWriter, r *http.Request) {
+	avatar := r.PostFormValue("avatar")
+	if len(avatar) != 64 {
+		common.ReturnEFormat(w, common.CODE_PARAMS_INVALID, "无效的hash值")
+		return
+	}
+	err:=UserModel.Update(fm.DbSetCondition{}.And("=","email",sess.User.Email).Set("avatar",avatar))
+	if err != nil {
+		log.E("setUserAvatar失败",sess.User.Email,"reason:%s",err.Error())
+		common.ReturnEFormat(w, common.CODE_DB_RW_ERR, "修改头像失败!")
+		return
+	}
+	common.ReturnFormat(w, common.CODE_OK, map[string]interface{}{"msg":"修改头像成功!"})
+	log.N("setUserAvatar成功",sess.User.Email,"修改头像")
 }

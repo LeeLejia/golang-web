@@ -10,7 +10,7 @@ import (
 	"html/template"
 	"io/ioutil"
 	"strings"
-	"strconv"
+	"os"
 )
 
 func main() {
@@ -35,6 +35,7 @@ func BeginServer(){
 		{Url:"/api/login",Check:false,Handle:app.Login},
 		{Url:"/api/logout",Check:true,Handle:app.Logout},
 		{Url:"/api/register",Check:false,Handle:app.Register},
+		{Url:"/api/setUserAvatar",Check:true,Handle:app.SetUserAvatar},
 		// 发布任务
 		{Url:"/api/publish",Check:true,Handle:app.Publish},
 		{Url:"/api/getTask",Check:false,Handle:app.GetTask},
@@ -50,8 +51,6 @@ func BeginServer(){
 		//{Url:"/api/developer/list-codes",Check:true,Handle2:app.ListCodes},
 	}
 	common.SetRouters(routers)
-
-	http.Handle("/",http.FileServer(http.Dir(conf.App.StaticPath)))
 	fmt.Println("开始服务！")
 	err:=http.ListenAndServe(fmt.Sprintf(":%s", conf.App.ServerPort), nil)
 	if err!=nil{
@@ -74,7 +73,14 @@ func InitTemplate(){
 		}
 		http.Redirect(writer,request,"/",http.StatusFound)
 	}
-	http.HandleFunc("/fangtan", handler)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		f,err := os.Stat(conf.App.StaticPath + r.URL.String())
+		if err != nil || f.IsDir() {
+			handler(w,r)
+			return
+		}
+		http.FileServer(http.Dir(conf.App.StaticPath)).ServeHTTP(w,r)
+	})
 	// 更新模板文件
 	http.HandleFunc("/resetTemplate", func(writer http.ResponseWriter, request *http.Request) {
 		index,err=getTemplate()
