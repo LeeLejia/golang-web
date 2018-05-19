@@ -22,7 +22,7 @@ func main() {
 	// 初始化日志系统
 	log.Init()
 	// 初始化插件
-	plugin.Init()
+	go plugin.Init()
 	defer func() {
 		log.Flush()
 	}()
