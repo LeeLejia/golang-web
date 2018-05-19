@@ -1,4 +1,4 @@
-package plugin-wx
+package wx
 
 import (
 	"github.com/songtianyi/rrframework/logs"
@@ -9,10 +9,10 @@ import (
 	"github.com/songtianyi/wechat-go/wxweb"
 )
 
-func init() {
+func Init() {
 	// 创建session, 一个session对应一个机器人
 	// 二维码显示在终端上
-	session, err := wxweb.CreateSession(nil, nil, wxweb.TERMINAL_MODE)
+	session, err := wxweb.CreateSession(nil, nil, wxweb.WEB_MODE)
 	if err != nil {
 		logs.Error(err)
 		return

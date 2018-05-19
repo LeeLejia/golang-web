@@ -1,4 +1,4 @@
-package wx // 以插件名命令包名
+package wxPlugin // 以插件名命令包名
 
 import (
 	"github.com/songtianyi/rrframework/logs" // 导入日志包

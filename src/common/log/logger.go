@@ -50,13 +50,8 @@ func Init() {
 		return
 	}
 	LogModel = l
-}
-/**
-	配置
- */
-func SetConfig(outConsole,writeDb bool){
-	CONF_WRITE_TO_DB = writeDb
-	FMT_OUT = outConsole
+	CONF_WRITE_TO_DB = conf.App.LogWriteDb
+	FMT_OUT = conf.App.LogOutConsole
 }
 /**
 	debug

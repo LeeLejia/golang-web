@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"strings"
 	"os"
+	"./plugin"
 )
 
 func main() {
@@ -20,7 +21,8 @@ func main() {
 	app.Init()
 	// 初始化日志系统
 	log.Init()
-	log.SetConfig(conf.App.LogOutConsole,conf.App.LogWriteDb)
+	// 初始化插件
+	plugin.Init()
 	defer func() {
 		log.Flush()
 	}()
