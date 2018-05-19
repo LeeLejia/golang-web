@@ -69,15 +69,19 @@ func InitTemplate(){
 	}
 	handler:=func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "text/html;charset=utf-8")
-		if request.Method == "GET" && err==nil{
-			index.Execute(writer, nil)
+		if request.Method == "GET"{
+			err:=index.Execute(writer, nil)
+			if err!=nil{
+				http.Redirect(writer,request,"/404.html",http.StatusFound)
+			}
 			return
 		}
-		http.Redirect(writer,request,"/",http.StatusFound)
+		http.Redirect(writer,request,"/404.html",http.StatusFound)
 	}
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		f,err := os.Stat(conf.App.StaticPath + r.URL.String())
 		if err != nil || f.IsDir() {
+			// 不是文件
 			handler(w,r)
 			return
 		}
@@ -88,12 +92,10 @@ func InitTemplate(){
 		index,err=getTemplate()
 		if err!=nil{
 			rs:=fmt.Sprintf("设置模板出错!原因：%s",err.Error())
-			fmt.Println(rs)
 			writer.Write([]byte(rs))
 			return
 		}
 		rs:=fmt.Sprintf("更新成功，入口模板为%s",index.Name())
-		fmt.Println(rs)
 		writer.Write([]byte(rs))
 		return
 	})
@@ -118,7 +120,7 @@ func getTemplate() (*template.Template,error){
 		}
 	}
 	if len(htmlFiles)==0{
-		return nil,fmt.Errorf("在%s中找不到模板文件.",conf.App.StaticPath)
+		return nil,fmt.Errorf("在%s中找不到模板文件",conf.App.StaticPath)
 	}
 	templates:=template.Must(template.ParseFiles(htmlFiles...))
 	/*设置前端入口模板*/
