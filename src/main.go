@@ -49,6 +49,12 @@ func BeginServer(){
 		// App添加/删除/列表获取
 		{Url:"/api/developer/add-app",Check:true,Handle:app.AddApp},
 		{Url:"/api/developer/list-apps",Check:true,Handle:app.ListApps},
+		{Url:"/api/pay",Check:true,Handle:app.Pay},
+		{Url:"/api/pay/notify",Check:true,Handle:func(sess *common.Session,w http.ResponseWriter, r *http.Request){
+			r.ParseForm()
+			fmt.Printf("notify_callback!!")
+			fmt.Printf(fmt.Sprintf("%v",r.Form))
+		}},
 		//{Url:"/api/developer/add-code",Check:true,Handle2:app.AddCode},
 		//{Url:"/api/developer/list-codes",Check:true,Handle2:app.ListCodes},
 	}

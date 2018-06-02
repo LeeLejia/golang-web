@@ -1,13 +1,13 @@
 package plugin
 
 import (
-	"./wx"
+	//"./wx"
 	"./email"
 )
 
 func Init(){
 	// 微信插件
-	wx.Init()
+	//wx.Init()
 	// 邮箱插件
 	email.Init()
 }

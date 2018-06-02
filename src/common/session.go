@@ -16,7 +16,8 @@ type Session struct {
 	Token     string
 	Time   time.Time
 }
-const TOKEN_TIME_OUT = 60*10
+// session过期时间,单位秒
+const TOKEN_TIME_OUT = 60*20
 var UserSessions = sync.Map{}
 /**
 获取Session键
