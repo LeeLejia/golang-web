@@ -20,6 +20,8 @@ const(
 	CODE_ROLE_INVADE = 512
 	// 数据库读写错误
 	CODE_DB_RW_ERR = 128
+	// 资源不够
+	CODE_RESOURCE_SHORT = 601
 
 	//注册-帐号已经存在
 	REGISTER_ACCOUNT_EXIST = 1003

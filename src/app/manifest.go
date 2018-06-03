@@ -13,6 +13,7 @@ var VlogModel model.DbModel
 var FileModel model.DbModel
 var PublishModel model.DbModel
 var GoodModel model.DbModel
+var OrderModel model.DbModel
 
 
 func Init(){
@@ -58,6 +59,11 @@ func Init(){
 		fmt.Println(err.Error())
 		return
 	}
+	order,err:=m.GetOrderModel()
+	if err!=nil{
+		fmt.Println(err.Error())
+		return
+	}
 	AppModel = app
 	CodeModel = code
 	UserModel = user
@@ -65,4 +71,5 @@ func Init(){
 	VlogModel = vlog
 	PublishModel = publish
 	GoodModel = good
+	OrderModel = order
 }
