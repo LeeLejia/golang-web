@@ -12,13 +12,14 @@ import (
 type tomlFile struct {
 	// site
 	SiteName	string `toml:"siteName"`
+	AppEvn		string `toml:"appEnv"`
 	// 数据库
 	DBHost     string `toml:"dBHost"`
 	DBPort     string `toml:"dBPort"`
 	DBUser     string `toml:"dBUser"`
 	DBPassword string `toml:"dBPassword"`
 	DBName     string `toml:"dBName"`
-	DBNameTest string `toml:"dBNameTest"`
+	TestDbName string `toml:"dBNameTest"`
 	DBDriver   string `toml:"dBDriver"`
 	// 路径
 	PathFile   string `toml:"filePath"`
@@ -35,6 +36,7 @@ type tomlFile struct {
 	// 支付系统
 	PayPid int    `toml:"payPid"`
 	PayKey string `toml:"payKey"`
+	PayNotify string `toml:"payNotify"`
 	// redis
 	RedisHost     string `toml:"redisHost"`
 	RedisPort     string `toml:"redisPort"`

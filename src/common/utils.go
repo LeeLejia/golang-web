@@ -3,6 +3,8 @@ package common
 import (
 	"math/rand"
 	"time"
+	"strconv"
+	"bytes"
 )
 
 /**
@@ -17,4 +19,15 @@ func  GetRandomString(l int) string {
 		result = append(result, bytes[r.Intn(len(bytes))])
 	}
 	return string(result)
+}
+/**
+字符串转ints
+ */
+func BytesToInt(data []byte) string {
+	buffer := new(bytes.Buffer)
+	for _, b := range data {
+		s := strconv.FormatInt(int64(b&0xff), 10)
+		buffer.WriteString(s)
+	}
+	return buffer.String()
 }

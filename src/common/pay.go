@@ -12,9 +12,8 @@ import (
 /**
 获取支付链接
  */
-func GetAliPayLink(money float32,commodity string,return_url string) (url string, err error) {
-	notify_url:="https://www.cjwddz.cn/api/register"
-	out_trade_no:="123456"
+func GetAliPayLink(money float32,commodity string,out_trade_no string,return_url string) (url string, err error) {
+	notify_url:=conf.App.PayNotify
 	pid:=conf.App.PayPid
 	key:=conf.App.PayKey
 	sitename:=conf.App.SiteName

@@ -12,11 +12,16 @@ var UserModel model.DbModel
 var VlogModel model.DbModel
 var FileModel model.DbModel
 var PublishModel model.DbModel
+var GoodModel model.DbModel
 
 
 func Init(){
 	if !model.DbHasInit{
-		model.InitDB(conf.App.DBHost, conf.App.DBPort, conf.App.DBUser, conf.App.DBPassword, conf.App.DBName, conf.App.DBDriver)
+		if conf.App.AppEvn=="dev"{
+			model.InitDB(conf.App.DBHost, conf.App.DBPort, conf.App.DBUser, conf.App.DBPassword, conf.App.TestDbName, conf.App.DBDriver)
+		}else{
+			model.InitDB(conf.App.DBHost, conf.App.DBPort, conf.App.DBUser, conf.App.DBPassword, conf.App.DBName, conf.App.DBDriver)
+		}
 	}
 	app,err:= m.GetAppModel()
 	if err!=nil{
@@ -48,10 +53,16 @@ func Init(){
 		fmt.Println(err.Error())
 		return
 	}
+	good,err:=m.GetGoodModel()
+	if err!=nil{
+		fmt.Println(err.Error())
+		return
+	}
 	AppModel = app
 	CodeModel = code
 	UserModel = user
 	FileModel = file
 	VlogModel = vlog
 	PublishModel = publish
+	GoodModel = good
 }
