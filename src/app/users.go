@@ -53,6 +53,11 @@ func Login(_ *common.Session, w http.ResponseWriter, r *http.Request) {
 		log.W("login失败","","account:%s,pwd:%s,osType:%s,reason:%s",account,pwd,osType,"账号已被停用,请咨询平台管理员")
 		return
 	}
+	if usr.Status == model.USER_STATUS_WAITING_VERIFY {
+		common.ReturnEFormat(w, common.CODE_VERIFY_FAIL, "该帐号正在等待审核,请咨询平台管理员")
+		log.W("login失败","","account:%s,pwd:%s,osType:%s,reason:%s",account,pwd,osType,"该帐号正在等待审核,请咨询平台管理员")
+		return
+	}
 	sessionId,session := common.SaveSession(usr,osType)
 	http.SetCookie(w,&http.Cookie{Name:"sessionId",Value:sessionId,Path:"/"})
 	http.SetCookie(w,&http.Cookie{Name:"token",Value:session.Token,Path:"/"})
@@ -73,6 +78,7 @@ func Login(_ *common.Session, w http.ResponseWriter, r *http.Request) {
 	common.ReturnFormat(w, common.CODE_OK, result)
 	log.N("login成功","","account:%s,pwd:%s,osType:%s",account,pwd,osType)
 }
+
 /**
 用户注销
  */
@@ -81,6 +87,7 @@ func Logout(sess *common.Session, w http.ResponseWriter, r *http.Request) {
 	common.RemoveSession(r)
 	common.ReturnFormat(w, common.CODE_OK, map[string]interface{}{"msg":"注销成功！"})
 }
+
 /**
 注册
  */
@@ -142,11 +149,15 @@ func Register(_ *common.Session, w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	status:= model.USER_STATUS_VALID
+	if common.IsRole(role,model.USER_ROLE_ADMIN){
+		status = model.USER_STATUS_WAITING_VERIFY
+	}
 	user := model.T_user{
 		Role:role,
 		Nick:nick,
 		Pwd:pwd,
-		Status:model.USER_STATUS_VALID,
+		Status:status,
 		Avatar:"https://avatars2.githubusercontent.com/u/24471738?v=4&s=40",
 		Phone:phone,
 		Email:email,

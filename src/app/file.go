@@ -66,6 +66,7 @@ func DeleteFile(sess * common.Session,w http.ResponseWriter, r *http.Request){
 	log.N("DeleteFile",sess.User.Email,fmt.Sprintf("id=%d,hash=%s",id,hash))
 	return
 }
+
 /**
 检查sha256,判断文件是否存在
  */

@@ -109,18 +109,20 @@ func IsRole(userRoles string, role string) bool {
 /**
 发送邮件通知
  */
-func SendToMail(user, password, host, to, subject, body, mailtype string) error {
-	hp := strings.Split(host, ":")
-	auth := smtp.PlainAuth("", user, password, hp[0])
-	var content_type string
-	if mailtype == "html" {
-		content_type = "Content-Type: text/" + mailtype + "; charset=UTF-8"
-	} else {
-		content_type = "Content-Type: text/plain" + "; charset=UTF-8"
+func SendToMail() error {
+	// Set up authentication information.
+	userName:="baicaiplus@163.com"
+	password:="baibaiasdfsssee2"
+	host:="mail.163.com"
+	auth := smtp.PlainAuth("", userName, password, host)
+	to := []string{"1436983000@qq.com","cjwddz@gmail.com"}
+	msg := []byte("To: recipient@example.net\r\n" +
+		"Subject: discount Gophers!\r\n" +
+		"\r\n" +
+		"This is the email body.\r\n")
+	err := smtp.SendMail("mail.163.com:25", auth, userName, to, msg)
+	if err != nil {
+		fmt.Printf(err.Error())
 	}
-	msg := []byte("To: " + to + "\r\nFrom: " + user + "\r\nSubject: " + subject + "\r\n" + content_type + "\r\n\r\n" + body)
-	send_to := strings.Split(to, ";")
-	err := smtp.SendMail(host, auth, user, send_to, msg)
 	return err
 }
-

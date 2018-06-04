@@ -23,7 +23,6 @@ type tomlFile struct {
 	DBDriver   string `toml:"dBDriver"`
 	// 路径
 	PathFile   string `toml:"filePath"`
-	PathPic    string `toml:"picturePath"`
 	StaticPath string `toml:"staticPath"`
 	// 服务器
 	ServerHost string `toml:"serverHost"`
@@ -64,7 +63,7 @@ func Init(filePath string) {
 检查文件目录
  */
 func checkDirs(){
-	for _,path:=range []string{App.StaticPath,App.PathPic,App.PathFile} {
+	for _,path:=range []string{App.StaticPath,App.PathFile} {
 		rp:=RealFilePath(path)
 		if _,err:=os.Stat(rp);err!=nil{
 			fmt.Println(fmt.Sprintf("\x1b[%dm路径不存在%s,即将重新创建。detail:%s\x1b[0m",uint8(91),rp,err.Error()))
