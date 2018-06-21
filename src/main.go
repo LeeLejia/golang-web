@@ -52,6 +52,7 @@ func BeginServer(){
 		// 商品和交易
 		{Url:"/api/pay",Check:true,Handle:app.Pay},
 		{Url:"/api/getGoods",Check:true,Handle:app.GetGoods},
+		{Url:"/api/addGood",Check:true,Handle:app.AddGood},
 		{Url:"/api/getOrders",Check:true,Handle:app.GetOrders},
 		{Url:"/api/pay/notify",Check:true,Handle:func(sess *common.Session,w http.ResponseWriter, r *http.Request){
 			r.ParseForm()

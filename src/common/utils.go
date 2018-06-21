@@ -5,6 +5,7 @@ import (
 	"time"
 	"strconv"
 	"bytes"
+	"encoding/base64"
 )
 
 /**
@@ -34,6 +35,7 @@ func  GetRandomInt(l int) string {
 	}
 	return string(result)
 }
+
 /**
 字符串转ints
  */
@@ -44,4 +46,11 @@ func BytesToInt(data []byte) string {
 		buffer.WriteString(s)
 	}
 	return buffer.String()
+}
+
+/**
+转base64
+ */
+func ToBase64(data []byte) string{
+	return base64.StdEncoding.EncodeToString(data)
 }

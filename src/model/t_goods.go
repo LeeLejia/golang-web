@@ -10,7 +10,7 @@ import (
 DROP TABLE IF EXISTS t_goods;
 CREATE TABLE t_goods (
 "id" serial NOT NULL,
-"type" serial NOT NULL,
+"type" varchar(128),
 "channel" varchar(16) COLLATE "default",
 "name" varchar(128) COLLATE "default",
 "price" int,
@@ -43,7 +43,7 @@ const (
 func GetGoodModel() (m.DbModel, error){
 	sc:=m.SqlController {
 		TableName:      "t_goods",
-		InsertColumns:  []string{"channel","name","price","state","owner","count","expend","update_at","created_at"},
+		InsertColumns:  []string{"type", "channel","name","price","state","owner","count","expend","update_at","created_at"},
 		QueryColumns:   []string{"id","type","channel","name","price","state","owner","count","expend","update_at","created_at"},
 		InSertFields:   insertGoodFields,
 		QueryField2Obj: queryGoodField2Obj,
@@ -61,7 +61,7 @@ func insertGoodFields(obj interface{}) []interface{} {
 		}
 	}
 	return []interface{}{
-		good.Channel, good.Name, good.Price, good.State, good.Owner, good.Count, expend, good.UpdateAt, good.CreatedAt,
+		good.Type, good.Channel, good.Name, good.Price, good.State, good.Owner, good.Count, expend, good.UpdateAt, good.CreatedAt,
 	}
 }
 func queryGoodField2Obj(fields []interface{}) interface{} {

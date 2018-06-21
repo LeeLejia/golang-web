@@ -68,7 +68,9 @@ func AddGood(sess *common.Session, w http.ResponseWriter, r *http.Request){
 	expend:= simplejson.New()
 	expend.Set("desc",r.Form.Get("desc"))
 	expend.Set("picture",r.Form.Get("picture"))
+	typeStr:=sess.User.Email + "|" + strconv.FormatInt(time.Now().Unix(),32)
 	good:=model.T_Goods{
+		Type: common.ToBase64([]byte(typeStr)),
 		Channel:   channel,
 		Name:      name,
 		Price:     price,
