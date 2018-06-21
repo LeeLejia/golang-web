@@ -83,6 +83,7 @@ func InitTemplate(){
 		if request.Method == "GET"{
 			err:=index.Execute(writer, nil)
 			if err!=nil{
+				fmt.Println(err.Error())
 				http.Redirect(writer,request,"/404.html",http.StatusFound)
 			}
 			return
@@ -94,6 +95,7 @@ func InitTemplate(){
 		if err != nil || f.IsDir() {
 			// 不是文件
 			handler(w,r)
+			fmt.Println("不是文件!"+err.Error())
 			return
 		}
 		http.FileServer(http.Dir(conf.App.StaticPath)).ServeHTTP(w,r)
@@ -135,6 +137,6 @@ func getTemplate() (*template.Template,error){
 	}
 	templates:=template.Must(template.ParseFiles(htmlFiles...))
 	/*设置前端入口模板*/
-	index:=templates.Lookup("entry.html")
+	index:=templates.Lookup("index.html")
 	return index,nil
 }
