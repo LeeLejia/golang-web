@@ -135,6 +135,6 @@ func getTemplate() (*template.Template,error){
 	}
 	templates:=template.Must(template.ParseFiles(htmlFiles...))
 	/*设置前端入口模板*/
-	index:=templates.Lookup("index.html")
+	index:=templates.Lookup("entry.html")
 	return index,nil
 }
