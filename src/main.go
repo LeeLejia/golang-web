@@ -91,14 +91,21 @@ func InitTemplate(){
 		http.Redirect(writer,request,"/404.html",http.StatusFound)
 	}
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		f,err := os.Stat(conf.App.StaticPath + r.URL.String())
-		if err != nil || f.IsDir() {
-			// 不是文件
+		path:=conf.App.StaticPath + r.URL.String()
+		f,err := os.Stat(path)
+		if err != nil{	// 不存在路径
 			handler(w,r)
-			fmt.Println("不是文件!"+err.Error())
 			return
 		}
-		http.FileServer(http.Dir(conf.App.StaticPath)).ServeHTTP(w,r)
+		if !f.IsDir() { // 文件直接提供
+			http.FileServer(http.Dir(conf.App.StaticPath)).ServeHTTP(w,r)
+			return
+		}
+		if _,err := os.Stat(path + "/index.html");err==nil {
+			http.FileServer(http.Dir(conf.App.StaticPath)).ServeHTTP(w,r)
+		}else {	// 返回找不到,否则会列出全部静态目录
+			handler(w,r)
+		}
 	})
 	// 更新模板文件
 	http.HandleFunc("/resetTemplate", func(writer http.ResponseWriter, request *http.Request) {
